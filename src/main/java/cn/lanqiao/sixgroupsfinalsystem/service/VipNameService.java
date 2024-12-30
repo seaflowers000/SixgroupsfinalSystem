@@ -1,4 +1,15 @@
 package cn.lanqiao.sixgroupsfinalsystem.service;
 
-public class VipNameService {
+
+
+import cn.lanqiao.sixgroupsfinalsystem.model.pojo.VipName;
+
+import java.util.List;
+
+public interface VipNameService {
+    /**
+     * 查询所有会员列表
+     */
+
+    List<VipName> selectAll();
 }
