@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 public class Writings {
 
   private Integer id;
+  // 文章名称
   private String title;
+  //
   private java.sql.Timestamp publishTime;
   private String category;
   private Integer sortOrder;
