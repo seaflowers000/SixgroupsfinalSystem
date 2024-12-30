@@ -80,4 +80,6 @@ public class SixmagLogin {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
+
 }
