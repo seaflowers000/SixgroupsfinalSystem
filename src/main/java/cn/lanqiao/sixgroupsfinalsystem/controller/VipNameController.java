@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/vipName")
@@ -35,6 +36,25 @@ public class VipNameController {
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseUtils(500, "查询失败: " + e.getMessage());
+        }
+    }
+        // 删除单个会员
+    @PostMapping("/delete")
+    public ResponseUtils<String> delete(@RequestBody Map<String, Integer> params) {
+        try {
+            Integer id = params.get("id");
+            if (id == null) {
+                return new ResponseUtils<>(400, "参数错误", null);
+            }
+            boolean result = vipNameService.deleteById(id);
+            if (result) {
+                return new ResponseUtils<>(200, "删除成功", null);
+            } else {
+                return new ResponseUtils<>(500, "删除失败", null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseUtils<>(500, "删除失败: " + e.getMessage(), null);
         }
     }
 }

@@ -14,6 +14,7 @@ public class VipNameServiceImpl implements VipNameService {
     // 依赖注入
     @Autowired
     private VipNameMapper vipNameMapper;
+    // 查询所有会员
     @Override
     public List<VipName> selectAll() {
         final List<VipName> vipNameMappers = vipNameMapper.selectAll();
@@ -24,6 +25,18 @@ public class VipNameServiceImpl implements VipNameService {
             return null;
         }
     }
-
+    @Override
+    public boolean deleteById(Integer id) {
+        if (id == null) {
+            return false;
+        }
+        try {
+            int result = vipNameMapper.deleteById(id);
+            return result > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }

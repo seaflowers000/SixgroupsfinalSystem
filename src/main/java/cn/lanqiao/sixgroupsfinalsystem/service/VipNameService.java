@@ -12,4 +12,8 @@ public interface VipNameService {
      */
 
     List<VipName> selectAll();
+        /**
+     * 根据ID删除会员
+     */
+    boolean deleteById(Integer id);
 }
