@@ -38,7 +38,10 @@ public class VipNameController {
             return new ResponseUtils(500, "查询失败: " + e.getMessage());
         }
     }
-        // 删除单个会员
+    /**
+     * 删除单个会员
+     */
+
     @PostMapping("/delete")
     public ResponseUtils<String> delete(@RequestBody Map<String, Integer> params) {
         try {
@@ -57,8 +60,10 @@ public class VipNameController {
             return new ResponseUtils<>(500, "删除失败: " + e.getMessage(), null);
         }
     }
-    
-    // 批量删除会员
+
+    /**
+     * 批量删除会员
+     */
     @PostMapping("/batchDelete")
     public ResponseUtils<String> batchDelete(@RequestBody Map<String, List<Integer>> params) {
         try {
