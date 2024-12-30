@@ -121,26 +121,20 @@ layui.use(['table', 'layer', 'form', 'util'], function(){
 	// 自定义ajax请求
 	var tableIns = table.render({
 		elem: '#memberList'
-		, url: null  // 不使用layui的url配置
+		, data: []
 		, page: true
 		, limits: [10, 20, 30, 40, 50]
-		, limit: pageSize
-		, cols: [[ //表头
-			{type: 'checkbox', fixed: 'left'}
-			, {field: 'id', title: 'ID', width: 80, sort: true}
-			, {field: 'username', title: '用户名', width: 120}
-			, {field: 'gender', title: '性别', width: 80}
-			, {field: 'phoneNumber', title: '手机', width: 120}
-			, {field: 'email', title: '邮箱', width: 150}
-			, {field: 'address', title: '地址', width: 200}
-			, {
-				field: 'joinTime', title: '加入时间', width: 160, templet: function (d) {
-					if(!d.joinTime) return '';
-					return util.toDateString(new Date(d.joinTime), 'yyyy-MM-dd HH:mm:ss');
-				}
-			}
-			, {field: 'status', title: '状态', width: 100, templet: '#statusTpl'}
-			, {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150}
+		, limit: 10
+		, width: 1170  // 设置表格总宽度
+		, cols: [[ //表头 (总宽度：1140px)
+			{type: 'checkbox', fixed: 'left', width: 60}      // 60px
+			,{field: 'id', title: 'ID', width: 100}          // 100px
+			,{field: 'username', title: '用户名', width: 150}  // 150px
+			,{field: 'gender', title: '性别', width: 100}      // 100px
+			,{field: 'email', title: '邮箱', width: 220}      // 220px
+			,{field: 'address', title: '地址', width: 210}    // 270px
+			,{field: 'status', title: '状态', width: 100, templet: '#statusTpl'}  // 100px
+			,{title: '操作', toolbar: '#barDemo', width: 222, fixed: 'right'}     // 200px
 		]]
 	});
 

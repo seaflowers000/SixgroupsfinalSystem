@@ -17,6 +17,10 @@ public class VipNameController {
     @Autowired
     private VipNameService vipNameService;
 
+    /**
+     * 会员列表查询所有
+     * @return
+     */
     @GetMapping("/select")
     public ResponseUtils select(){
         try {
