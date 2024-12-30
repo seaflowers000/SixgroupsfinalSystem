@@ -19,19 +19,15 @@ public interface VipNameMapper {
     @Select("select * from vip_name")
     List<VipName> selectAll();
     /**
-     * 逻辑删除会员（将status改为1）
+     * 逻辑删除会员（将status改为1）单个和批量删除的sql语句
      */
     @Update("UPDATE vip_name SET status = 1 WHERE id = #{id}")
     int deleteById(Integer id);
     /**
-     * 批量逻辑删除会员（将status改为1）
+     * 批量逻辑删除会员
      */
-    @Update("<script>" +
-            "UPDATE vip_name SET status = 1 " +
-            "WHERE id IN " +
-            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>" +
-            "#{id}" +
-            "</foreach>" +
-            "</script>")
-    int batchDelete(@Param("ids") List<Integer> ids);
+    @Update("UPDATE vip_name SET status = 1 WHERE id = #{id}")
+
+    boolean batchDelete(List<Integer> ids);
+
 }
