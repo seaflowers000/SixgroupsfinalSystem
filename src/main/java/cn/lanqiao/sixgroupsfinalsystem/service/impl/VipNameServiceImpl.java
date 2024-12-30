@@ -26,6 +26,7 @@ public class VipNameServiceImpl implements VipNameService {
             return null;
         }
     }
+    // 删除单个会员
     @Override
     public boolean deleteById(Integer id) {
         if (id == null) {
@@ -39,18 +40,16 @@ public class VipNameServiceImpl implements VipNameService {
             return false;
         }
     }
+    // 批量删除会员
     @Override
-    @Transactional  // 添加事务管理
+    @Transactional
     public boolean batchDelete(List<Integer> ids) {
         if (ids == null || ids.isEmpty()) {
             return false;
         }
-        try {
-            int result = vipNameMapper.batchDelete(ids);
-            return result > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        for (Integer id : ids) {
+            vipNameMapper.deleteById(id);
         }
+        return true;
     }
 }
