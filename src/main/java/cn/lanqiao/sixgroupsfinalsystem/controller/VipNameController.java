@@ -57,5 +57,25 @@ public class VipNameController {
             return new ResponseUtils<>(500, "删除失败: " + e.getMessage(), null);
         }
     }
+    
+    // 批量删除会员
+    @PostMapping("/batchDelete")
+    public ResponseUtils<String> batchDelete(@RequestBody Map<String, List<Integer>> params) {
+        try {
+            List<Integer> ids = params.get("ids");
+            if (ids == null || ids.isEmpty()) {
+                return new ResponseUtils<>(400, "参数错误", null);
+            }
+            boolean result = vipNameService.batchDelete(ids);
+            if (result) {
+                return new ResponseUtils<>(200, "批量删除成功", null);
+            } else {
+                return new ResponseUtils<>(500, "批量删除失败", null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseUtils<>(500, "批量删除失败: " + e.getMessage(), null);
+        }
+    }
 }
 

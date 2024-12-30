@@ -8,6 +8,7 @@ import cn.lanqiao.sixgroupsfinalsystem.service.VipNameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class VipNameServiceImpl implements VipNameService {
@@ -38,5 +39,18 @@ public class VipNameServiceImpl implements VipNameService {
             return false;
         }
     }
-
+    @Override
+    @Transactional  // 添加事务管理
+    public boolean batchDelete(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return false;
+        }
+        try {
+            int result = vipNameMapper.batchDelete(ids);
+            return result > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

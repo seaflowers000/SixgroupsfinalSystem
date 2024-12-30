@@ -16,4 +16,8 @@ public interface VipNameService {
      * 根据ID删除会员
      */
     boolean deleteById(Integer id);
+    /**
+     * 批量逻辑删除会员
+     */
+    boolean batchDelete(List<Integer> ids);
 }
