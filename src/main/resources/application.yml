@@ -16,6 +16,7 @@ spring:
         - classpath:/static/
         - classpath:/lib/
         - classpath:/resources/
+        - - classpath:/
 
 
   datasource:
