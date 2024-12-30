@@ -25,12 +25,8 @@ layui.use(['table', 'jquery','form', 'admin'], function() {
 			}, {
 				field: 'sort',title: '排序',sort: true
 			}, {
-				field: 'recommend',title: '推荐',templet: '#recommendTpl',unresize: true
-			}, {
 				field: 'top',title: '置顶',templet: '#topTpl',unresize: true
-			}, {
-				field: 'review',title: '审核',templet: '#reviewTpl',unresize: true
-			}, {
+			},  {
 				field: 'operate',title: '操作',toolbar: '#operateTpl',unresize: true
 			}]
 		],
@@ -81,25 +77,7 @@ layui.use(['table', 'jquery','form', 'admin'], function() {
 			}
 
 		},
-		Recommend: function() {
-			var checkStatus = table.checkStatus('articleList'),
-				data = checkStatus.data;
-			if(data.length > 0) {
-				layer.msg("您点击了推荐操作");
-				for(var i = 0; i < data.length; i++) {
-					console.log("a:" + data[i].recommend);
-					data[i].recommend = "checked";
-					console.log("aa:" + data[i].recommend);
-					form.render();
-				}
 
-			} else {
-				console.log("b");
-				layer.msg("请先选择");
-			}
-
-			//$(".layui-table-body .layui-form-checked").parents('tr').children().children('input[name="zzz"]').attr("checked","checked");
-		},
 		Top: function() {
 			layer.msg("您点击了置顶操作");
 		},
