@@ -8,14 +8,18 @@ import cn.lanqiao.sixgroupsfinalsystem.service.VipNameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
 
 @Service
 public class VipNameServiceImpl implements VipNameService {
     // 依赖注入
     @Autowired
     private VipNameMapper vipNameMapper;
-    // 查询所有会员
+
+    /**
+     * 查询所有会员
+     * @return
+     */
     @Override
     public List<VipName> selectAll() {
         final List<VipName> vipNameMappers = vipNameMapper.selectAll();
@@ -26,6 +30,12 @@ public class VipNameServiceImpl implements VipNameService {
             return null;
         }
     }
+
+    /**
+     * 删除单个会员
+     * @param id
+     * @return
+     */
     @Override
     public boolean deleteById(Integer id) {
         if (id == null) {
@@ -39,18 +49,33 @@ public class VipNameServiceImpl implements VipNameService {
             return false;
         }
     }
+
+    /**
+     * 批量逻辑删除会员
+     */
     @Override
-    @Transactional  // 添加事务管理
     public boolean batchDelete(List<Integer> ids) {
         if (ids == null || ids.isEmpty()) {
             return false;
         }
+        for (Integer id : ids) {
+            vipNameMapper.deleteById(id);
+        }
+        return true;
+    }
+
+    /**
+     * 模糊查询
+     * @param username
+     * @return
+     */
+    @Override
+    public List<VipName> search(String username) {
         try {
-            int result = vipNameMapper.batchDelete(ids);
-            return result > 0;
+            return vipNameMapper.search(username);
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return new ArrayList<>();
         }
     }
 }
