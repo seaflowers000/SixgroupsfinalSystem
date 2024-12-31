@@ -3,6 +3,7 @@ package cn.lanqiao.sixgroupsfinalsystem.service;
 
 
 import cn.lanqiao.sixgroupsfinalsystem.model.pojo.VipName;
+import io.lettuce.core.dynamic.annotation.Param;
 
 import java.util.List;
 
@@ -20,4 +21,8 @@ public interface VipNameService {
      * 批量逻辑删除会员
      */
     boolean batchDelete(List<Integer> ids);
+    /**
+     * 模糊查询会员
+     */
+    List<VipName> search(@Param("username") String username);
 }

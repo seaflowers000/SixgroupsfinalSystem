@@ -2,7 +2,8 @@ package cn.lanqiao.sixgroupsfinalsystem.controller;
 
 
 import cn.lanqiao.sixgroupsfinalsystem.model.pojo.VipName;
-import cn.lanqiao.sixgroupsfinalsystem.service.VipNameService;
+
+import cn.lanqiao.sixgroupsfinalsystem.service.impl.VipNameServiceImpl;
 import cn.lanqiao.sixgroupsfinalsystem.utils.ResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ import java.util.Map;
 
 public class VipNameController {
     @Autowired
-    private VipNameService vipNameService;
+    private VipNameServiceImpl vipNameServiceImpl;
 
     /**
      * 会员列表查询所有
@@ -25,7 +26,7 @@ public class VipNameController {
     @GetMapping("/select")
     public ResponseUtils select(){
         try {
-            List<VipName> vipNameMappers = vipNameService.selectAll();
+            List<VipName> vipNameMappers = vipNameServiceImpl.selectAll();
             System.out.println("查询结果：" + vipNameMappers);
             
             if(vipNameMappers != null && !vipNameMappers.isEmpty()){
@@ -49,7 +50,7 @@ public class VipNameController {
             if (id == null) {
                 return new ResponseUtils<>(400, "参数错误", null);
             }
-            boolean result = vipNameService.deleteById(id);
+            boolean result = vipNameServiceImpl.deleteById(id);
             if (result) {
                 return new ResponseUtils<>(200, "删除成功", null);
             } else {
@@ -71,7 +72,7 @@ public class VipNameController {
             if (ids == null || ids.isEmpty()) {
                 return new ResponseUtils<>(400, "参数错误", null);
             }
-            boolean result = vipNameService.batchDelete(ids);
+            boolean result = vipNameServiceImpl.batchDelete(ids);
             if (result) {
                 return new ResponseUtils<>(200, "批量删除成功", null);
             } else {
@@ -80,6 +81,20 @@ public class VipNameController {
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseUtils<>(500, "批量删除失败: " + e.getMessage(), null);
+        }
+    }
+    /**
+     * 模糊查询会员
+     */
+    @PostMapping("/select")
+    public ResponseUtils<List<VipName>> search(@RequestBody Map<String, Object> params) {
+        try {
+            String username = (String) params.get("username");
+            List<VipName> result = vipNameServiceImpl.search(username);
+            return new ResponseUtils<>(200, "查询成功", result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseUtils<>(500, "查询失败: " + e.getMessage(), null);
         }
     }
 }
