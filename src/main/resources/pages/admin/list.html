@@ -68,24 +68,16 @@
 					<!-- 数据将通过 JavaScript 动态渲染 -->
 				</tbody>
 			</table>
-			<div class="page">
-				<div>
-					<a class="prev" href="">&lt;&lt;</a>
-					<a class="num" href="">1</a>
-					<span class="current">2</span>
-					<a class="num" href="">3</a>
-					<a class="num" href="">489</a>
-					<a class="next" href="">&gt;&gt;</a>
-				</div>
-			</div>
+			<div class="page" id="page"></div>
 		</div>
 		<script src="../../lib/layui/layui.js" charset="utf-8"></script>
     	<script src="../../static/js/eleDel.js" type="text/javascript" charset="utf-8"></script>
 		<script>
-		layui.use(['laydate', 'jquery', 'form'], function() {
+		layui.use(['laydate', 'jquery', 'form', 'laypage'], function() {
 			var laydate = layui.laydate;
 			var $ = layui.jquery;
 			var form = layui.form;
+			var laypage = layui.laypage;
 			
 			// 初始化日期选择器
 			laydate.render({
@@ -96,45 +88,55 @@
 			});
 
 			// 加载管理员列表
-			function loadAdminList() {
+			function loadAdminList(pageNo = 1, loginName = '') {
 				axios({
-					url: 'http://localhost:8080/mang/select',
-					method: 'get'
+					url: '/mang/getAllUserByCon',
+					method: 'post',
+					data: {
+						pageNo: pageNo,
+						pageSize: 7,
+						loginName: loginName
+					}
 				}).then(response => {
 					if (response.data.code === 200) {
-						const adminList = response.data.data;
+						const data = response.data.data;
+						const records = data.records;
 						let html = '';
 						
-						adminList.forEach(admin => {
-							// 根据状态显示不同的按钮样式
-							const statusClass = admin.status === 1 ? 'layui-btn-normal' : 'layui-btn-danger';
-							const statusText = admin.status === 1 ? '已启用' : '已停用';
-							const statusIcon = admin.status === 1 ? '&#xe601;' : '&#xe62f;';
+						// 渲染表格数据
+						records.forEach(item => {
+							// 处理状态显示
+							const statusClass = item.status === 0 ? 'layui-btn-normal' : 'layui-btn-danger';
+							const statusText = item.status === 0 ? '已启用' : '已停用';
+							const statusIcon = item.status === 0 ? '&#xe601;' : '&#xe62f;';
+							
+							// 格式化日期
+							const joinTime = item.joinTime ? new Date(item.joinTime).toLocaleString() : '';
 							
 							html += `
 								<tr>
 									<td>
-										<div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id="${admin.id}">
+										<div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id="${item.id}">
 											<i class="layui-icon">&#xe605;</i>
 										</div>
 									</td>
-									<td>${admin.id}</td>
-									<td>${admin.loginName}</td>
-									<td>${admin.phone || ''}</td>
-									<td>${admin.email || ''}</td>
-									<td>${admin.role || ''}</td>
-									<td>${admin.joinTime || ''}</td>
+									<td>${item.id || ''}</td>
+									<td>${item.loginName || ''}</td>
+									<td>${item.phone || ''}</td>
+									<td>${item.email || ''}</td>
+									<td>${item.role || ''}</td>
+									<td>${joinTime}</td>
 									<td class="td-status">
 										<span class="layui-btn ${statusClass} layui-btn-xs">${statusText}</span>
 									</td>
 									<td class="td-manage">
-										<a onclick="member_stop(this,'${admin.id}')" href="javascript:;" title="${admin.status === 1 ? '停用' : '启用'}">
+										<a onclick="member_stop(this,'${item.id}')" href="javascript:;">
 											<i class="layui-icon">${statusIcon}</i>
 										</a>
-										<a title="编辑" onclick="WeAdminShow('编辑','./edit.html?id=${admin.id}')" href="javascript:;">
+										<a title="编辑" onclick="WeAdminShow('编辑','./edit.html?id=${item.id}')" href="javascript:;">
 											<i class="layui-icon">&#xe642;</i>
 										</a>
-										<a title="删除" onclick="member_del(this,'${admin.id}')" href="javascript:;">
+										<a title="删除" onclick="member_del(this,'${item.id}')" href="javascript:;">
 											<i class="layui-icon">&#xe640;</i>
 										</a>
 									</td>
@@ -142,10 +144,27 @@
 							`;
 						});
 						
-						document.getElementById('adminList').innerHTML = html;
+						// 更新表格内容
+						$('#adminList').html(html);
+						
 						// 更新总数显示
-						document.querySelector('.weadmin-block .fr').textContent = `共有数据：${adminList.length} 条`;
-						// 重新渲染表单元素
+						$('.weadmin-block .fr').text(`共有数据：${data.total} 条`);
+						
+						// 渲染分页
+						laypage.render({
+							elem: 'page',
+							count: data.total,
+							limit: 7,
+							curr: data.current,
+							layout: ['count', 'prev', 'page', 'next', 'skip'],
+							jump: function(obj, first) {
+								if (!first) {
+									loadAdminList(obj.curr, $('input[name="username"]').val());
+								}
+							}
+						});
+						
+						// 重新渲染表单
 						form.render();
 					} else {
 						layer.msg('获取数据失败：' + response.data.msg);
@@ -156,13 +175,12 @@
 				});
 			}
 
-			// 页面加载时获取数据
-			loadAdminList();
+			// 页面加载时获取第一页数据
+			loadAdminList(1);
 
 			// 搜索功能
 			form.on('submit(sreach)', function(data) {
-				// TODO: 实现搜索功能
-				console.log(data.field);
+				loadAdminList(1, data.field.username);
 				return false;
 			});
 		});

@@ -34,25 +34,25 @@ public class SixmagController {
     private StringRedisTemplate stringRedisTemplate;
     private static final ObjectMapper mapper=new ObjectMapper();
     //注册
-    @RequestMapping("/register")
-    public ResponseUtils<String> register(@RequestBody Manager mag, HttpServletRequest request){
-        try {
-            HttpSession session = request.getSession();
-            String verificationCode=(String) session.getAttribute("verificationcode");
-            String userCode = mag.getCode();
-            if (verificationCode.equalsIgnoreCase(userCode)){
-                int result = SixmagService.register(mag);
-                return (result == 1) ? new ResponseUtils<String>(200, "注册成功") : new ResponseUtils<String>(500, "注册失败");
-            }else{
-                return new ResponseUtils<String>(500,"验证码错误");
-            }
-
-
-        }catch (Exception e){
-            e.printStackTrace();
-            return  new ResponseUtils<String>(400,"数据注册异常");
-        }
-    }
+//    @RequestMapping("/register")
+//    public ResponseUtils<String> register(@RequestBody Manager mag, HttpServletRequest request){
+//        try {
+//            HttpSession session = request.getSession();
+//            String verificationCode=(String) session.getAttribute("verificationcode");
+//            String userCode = mag.getCode();
+//            if (verificationCode.equalsIgnoreCase(userCode)){
+//                int result = SixmagService.register(mag);
+//                return (result == 1) ? new ResponseUtils<String>(200, "注册成功") : new ResponseUtils<String>(500, "注册失败");
+//            }else{
+//                return new ResponseUtils<String>(500,"验证码错误");
+//            }
+//
+//
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            return  new ResponseUtils<String>(400,"数据注册异常");
+//        }
+//    }
     //登录
     @RequestMapping("/login")
         public ResponseUtils<MagVO> login(@RequestBody SixmagLogin loginForm, HttpServletResponse response) {

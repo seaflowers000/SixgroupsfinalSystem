@@ -17,8 +17,6 @@ spring:
         - classpath:/lib/
         - classpath:/resources/
         - classpath:/
-
-
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://47.109.206.82:3306/SixGroupsProjects?useUnicode=true&characterEncoding=utf8
@@ -54,3 +52,13 @@ spring:
 mybatis:
   configuration:
       map-underscore-to-camel-case: true
+mybatis-plus:
+  type-aliases-package: cn.lanqiao.model.entity
+  mapper-locations: mapper/**.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
