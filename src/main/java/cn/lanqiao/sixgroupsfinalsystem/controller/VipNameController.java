@@ -86,15 +86,15 @@ public class VipNameController {
     /**
      * 模糊查询会员
      */
-    @PostMapping("/select")
+    @PostMapping("/likeSelect")
     public ResponseUtils<List<VipName>> search(@RequestBody Map<String, Object> params) {
         try {
             String username = (String) params.get("username");
             List<VipName> result = vipNameServiceImpl.search(username);
-            return new ResponseUtils<>(200, "查询成功", result);
+            return new ResponseUtils<>(200, "模糊查询成功", result);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseUtils<>(500, "查询失败: " + e.getMessage(), null);
+            return new ResponseUtils<>(500, "模糊查询失败: " + e.getMessage(), null);
         }
     }
 }
