@@ -15,15 +15,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.sql.Timestamp;
 @RestController
 @RequestMapping("/mang")
 public class ManagerController {
@@ -88,6 +86,38 @@ public class ManagerController {
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseUtils(500, "查询失败: " + e.getMessage());
+        }
+    }
+    @PostMapping("/addMag")
+    public ResponseUtils addMag(@RequestBody Manager manager) {
+        try {
+            // 添加日志
+            System.out.println("接收到的数据：" + manager);
+            
+            // 验证必填字段
+            if (manager.getLoginName() == null || manager.getLoginName().trim().isEmpty()) {
+                return new ResponseUtils(500, "登录名不能为空", null);
+            }
+            if (manager.getPassword() == null || manager.getPassword().trim().isEmpty()) {
+                return new ResponseUtils(500, "密码不能为空", null);
+            }
+            
+            // 设置默认值
+            manager.setJoinTime(new Timestamp(System.currentTimeMillis()));
+            manager.setStatus(1);
+            
+            // 执行插入操作
+            int result = managerMapper.insert(manager);
+            System.out.println("插入结果：" + result); // 添加日志
+            
+            if (result > 0) {
+                return new ResponseUtils(200, "添加成功", null);
+            } else {
+                return new ResponseUtils(500, "添加失败", null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseUtils(500, "添加失败: " + e.getMessage());
         }
     }
 }
