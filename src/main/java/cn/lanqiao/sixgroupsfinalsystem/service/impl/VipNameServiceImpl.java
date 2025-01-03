@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.ArrayList;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.Date;
+import org.springframework.util.StringUtils;
 
 @Service
 public class VipNameServiceImpl implements VipNameService {
@@ -28,6 +31,32 @@ public class VipNameServiceImpl implements VipNameService {
             return vipNameMappers;
         }else{
             return null;
+        }
+    }
+
+    /**
+     * 添加会员
+     * @param vipName
+     * @return
+     */
+
+    @Override
+    @Transactional
+    public boolean add(VipName vipName) {
+        if (vipName == null || StringUtils.isEmpty(vipName.getUsername())) {
+            return false;
+        }
+        
+        try {
+            // 设置默认值
+            if (vipName.getStatus() == null) {
+                vipName.setStatus(0);
+            }
+            
+            return vipNameMapper.insert(vipName) > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
