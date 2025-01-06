@@ -5,16 +5,18 @@ import cn.lanqiao.sixgroupsfinalsystem.model.pojo.VipName;
 
 import cn.lanqiao.sixgroupsfinalsystem.service.impl.VipNameServiceImpl;
 import cn.lanqiao.sixgroupsfinalsystem.utils.ResponseUtils;
+import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/vipName")
-
+@CrossOrigin
 public class VipNameController {
     @Autowired
     private VipNameServiceImpl vipNameServiceImpl;
@@ -27,7 +29,7 @@ public class VipNameController {
     public ResponseUtils select(){
         try {
             List<VipName> vipNameMappers = vipNameServiceImpl.selectAll();
-            System.out.println("查询结果：" + vipNameMappers);
+            // System.out.println("查询结果：" + vipNameMappers);
             
             if(vipNameMappers != null && !vipNameMappers.isEmpty()){
                 return new ResponseUtils(200, "查询成功", vipNameMappers);
@@ -37,6 +39,32 @@ public class VipNameController {
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseUtils(500, "查询失败: " + e.getMessage());
+        }
+    }
+    /**
+     * 添加会员
+     * @return
+     */
+    @PostMapping("/add")
+    public ResponseUtils<String> add(@RequestBody VipName vipName) {
+        try {
+            // 参数验证
+            if (vipName == null || StringUtils.isEmpty(vipName.getUsername())) {
+                return new ResponseUtils<>(400, "用户名不能为空", null);
+            }
+            
+            // 设置默认状态
+            vipName.setStatus(0);
+            
+            boolean result = vipNameServiceImpl.add(vipName);
+            if (result) {
+                return new ResponseUtils<>(200, "添加成功", null);
+            } else {
+                return new ResponseUtils<>(500, "添加失败", null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseUtils<>(500, "添加失败: " + e.getMessage(), null);
         }
     }
     /**
@@ -86,15 +114,15 @@ public class VipNameController {
     /**
      * 模糊查询会员
      */
-    @PostMapping("/select")
+    @PostMapping("/likeSelect")
     public ResponseUtils<List<VipName>> search(@RequestBody Map<String, Object> params) {
         try {
             String username = (String) params.get("username");
             List<VipName> result = vipNameServiceImpl.search(username);
-            return new ResponseUtils<>(200, "查询成功", result);
+            return new ResponseUtils<>(200, "模糊查询成功", result);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseUtils<>(500, "查询失败: " + e.getMessage(), null);
+            return new ResponseUtils<>(500, "模糊查询失败: " + e.getMessage(), null);
         }
     }
 }

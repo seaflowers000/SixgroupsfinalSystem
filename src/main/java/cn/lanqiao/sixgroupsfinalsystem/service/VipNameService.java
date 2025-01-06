@@ -1,28 +1,33 @@
 package cn.lanqiao.sixgroupsfinalsystem.service;
 
-
-
 import cn.lanqiao.sixgroupsfinalsystem.model.pojo.VipName;
-import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public interface VipNameService {
     /**
-     * 查询所有会员列表
+     * 查询所有会员
      */
-
     List<VipName> selectAll();
-        /**
-     * 根据ID删除会员
+    
+    /**
+     * 添加会员
+     */
+    boolean add(VipName vipName);
+    
+    /**
+     * 删除会员
      */
     boolean deleteById(Integer id);
+    
     /**
-     * 批量逻辑删除会员
+     * 批量删除会员
      */
     boolean batchDelete(List<Integer> ids);
+    
     /**
      * 模糊查询会员
      */
-    List<VipName> search(@Param("username") String username);
+    List<VipName> search(String username);
 }
