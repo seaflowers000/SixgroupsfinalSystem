@@ -120,4 +120,18 @@ public class ManagerController {
             return new ResponseUtils(500, "添加失败: " + e.getMessage());
         }
     }
+    @PostMapping("/updateUser")
+    public ResponseUtils updateUser(@RequestBody Manager manager){
+        try {
+            int i = managerMapper.updateById(manager);
+            if(i == 1){
+                return new ResponseUtils(200, "更新成功", null);
+            } else {
+                return new ResponseUtils(500, "更新失败", null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseUtils(500, "更新失败: " + e.getMessage(), null);
+        }
+    }
 }
