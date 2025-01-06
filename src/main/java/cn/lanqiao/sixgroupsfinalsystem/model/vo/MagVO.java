@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,6 +16,33 @@ public class MagVO {
     private String role;
     private Integer status;
     private String Token;
+    private String email;
+    private Timestamp joinTime;
+    private String phone;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Timestamp getJoinTime() {
+        return joinTime;
+    }
+
+    public void setJoinTime(Timestamp joinTime) {
+        this.joinTime = joinTime;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
     public Integer getId() {
         return id;

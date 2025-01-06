@@ -1,8 +1,6 @@
 package cn.lanqiao.sixgroupsfinalsystem.model.pojo;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
@@ -10,18 +8,19 @@ import lombok.NoArgsConstructor;
 
 public class VipName {
 
-  private long id;
+  private Integer id;
+
   private String username;
   private String gender;
   private String email;
   private String address;
-  private long status;
+  private Integer status;
 
-  public long getId() {
+  public Integer getId() {
     return id;
   }
 
-  public void setId(long id) {
+  public void setId(Integer id) {
     this.id = id;
   }
 
@@ -57,11 +56,11 @@ public class VipName {
     this.address = address;
   }
 
-  public long getStatus() {
+  public Integer getStatus() {
     return status;
   }
 
-  public void setStatus(long status) {
+  public void setStatus(Integer status) {
     this.status = status;
   }
 }

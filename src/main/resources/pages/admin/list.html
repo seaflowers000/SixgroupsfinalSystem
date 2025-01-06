@@ -14,6 +14,8 @@
 	      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
 	      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
 	    <![endif]-->
+		<script src="../../js/axios.min.js"></script>
+		<script src="../../js/axiosConfig.js"></script>
 	</head>
 
 	<body>
@@ -62,46 +64,143 @@
 						<th>状态</th>
 						<th>操作</th>
 				</thead>
-				<tbody>
-					<tr>
-						<td>
-							<div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='2'><i class="layui-icon">&#xe605;</i></div>
-						</td>
-						<td>1</td>
-						<td>admin</td>
-						<td>18925139194</td>
-						<td>113664000@qq.com</td>
-						<td>超级管理员</td>
-						<td>2017-01-01 11:11:42</td>
-						<td class="td-status">
-							<span class="layui-btn layui-btn-normal layui-btn-xs">已启用</span></td>
-						<td class="td-manage">
-							<a onclick="member_stop(this,'10001')" href="javascript:;" title="启用">
-								<i class="layui-icon">&#xe601;</i>
-							</a>
-							<a title="编辑" onclick="WeAdminShow('编辑','./edit.html')" href="javascript:;">
-								<i class="layui-icon">&#xe642;</i>
-							</a>
-							<a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;">
-								<i class="layui-icon">&#xe640;</i>
-							</a>
-						</td>
-					</tr>
+				<tbody id="adminList">
+					<!-- 数据将通过 JavaScript 动态渲染 -->
 				</tbody>
 			</table>
-			<div class="page">
-				<div>
-					<a class="prev" href="">&lt;&lt;</a>
-					<a class="num" href="">1</a>
-					<span class="current">2</span>
-					<a class="num" href="">3</a>
-					<a class="num" href="">489</a>
-					<a class="next" href="">&gt;&gt;</a>
-				</div>
-			</div>
+			<div class="page" id="page"></div>
 		</div>
 		<script src="../../lib/layui/layui.js" charset="utf-8"></script>
     	<script src="../../static/js/eleDel.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+		layui.use(['laydate', 'jquery', 'form', 'laypage'], function() {
+			var laydate = layui.laydate;
+			var $ = layui.jquery;
+			var form = layui.form;
+			var laypage = layui.laypage;
+			
+			// 初始化日期选择器
+			laydate.render({
+				elem: '#start'
+			});
+			laydate.render({
+				elem: '#end'
+			});
+
+			// 加载管理员列表
+			function loadAdminList(pageNo = 1, loginName = '') {
+				axios({
+					url: '/mang/getAllUserByCon',
+					method: 'post',
+					data: {
+						pageNo: pageNo,
+						pageSize: 7,
+						loginName: loginName
+					}
+				}).then(response => {
+					if (response.data.code === 200) {
+						const data = response.data.data;
+						const records = data.records;
+						let html = '';
+						
+						// 渲染表格数据
+						records.forEach(item => {
+							// 处理状态显示
+							const statusClass = item.status === 0 ? 'layui-btn-normal' : 'layui-btn-danger';
+							const statusText = item.status === 0 ? '已启用' : '已停用';
+							const statusIcon = item.status === 0 ? '&#xe601;' : '&#xe62f;';
+							
+							// 格式化日期
+							const joinTime = item.joinTime ? new Date(item.joinTime).toLocaleString() : '';
+							
+							html += `
+								<tr>
+									<td>
+										<div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id="${item.id}">
+											<i class="layui-icon">&#xe605;</i>
+										</div>
+									</td>
+									<td>${item.id || ''}</td>
+									<td>${item.loginName || ''}</td>
+									<td>${item.phone || ''}</td>
+									<td>${item.email || ''}</td>
+									<td>${item.role || ''}</td>
+									<td>${joinTime}</td>
+									<td class="td-status">
+										<span class="layui-btn ${statusClass} layui-btn-xs">${statusText}</span>
+									</td>
+									<td class="td-manage">
+										<a onclick="member_stop(this,'${item.id}')" href="javascript:;">
+											<i class="layui-icon">${statusIcon}</i>
+										</a>
+										<a title="编辑" onclick="WeAdminShow('编辑','./edit.html?id=${item.id}')" href="javascript:;">
+											<i class="layui-icon">&#xe642;</i>
+										</a>
+										<a title="删除" onclick="member_del(this,'${item.id}')" href="javascript:;">
+											<i class="layui-icon">&#xe640;</i>
+										</a>
+									</td>
+								</tr>
+							`;
+						});
+						
+						// 更新表格内容
+						$('#adminList').html(html);
+						
+						// 更新总数显示
+						$('.weadmin-block .fr').text(`共有数据：${data.total} 条`);
+						
+						// 渲染分页
+						laypage.render({
+							elem: 'page',
+							count: data.total,
+							limit: 7,
+							curr: data.current,
+							layout: ['count', 'prev', 'page', 'next', 'skip'],
+							jump: function(obj, first) {
+								if (!first) {
+									loadAdminList(obj.curr, $('input[name="username"]').val());
+								}
+							}
+						});
+						
+						// 重新渲染表单
+						form.render();
+					} else {
+						layer.msg('获取数据失败：' + response.data.msg);
+					}
+				}).catch(error => {
+					console.error('请求失败：', error);
+					layer.msg('获取数据失败，请检查网络连接');
+				});
+			}
+
+			// 页面加载时获取第一页数据
+			loadAdminList(1);
+
+			// 搜索功能
+			form.on('submit(sreach)', function(data) {
+				loadAdminList(1, data.field.username);
+				return false;
+			});
+		});
+
+		// 删除功能
+		function member_del(obj, id) {
+			layer.confirm('确认要删除吗？', function(index) {
+				// TODO: 实现删除功能
+				layer.close(index);
+			});
+		}
+
+		// 启用/停用功能
+		function member_stop(obj, id) {
+			layer.confirm('确认要更改状态吗？', function(index) {
+				// TODO: 实现状态更改功能
+				layer.close(index);
+			});
+		}
+		</script>
 	</body>
 
 </html>
