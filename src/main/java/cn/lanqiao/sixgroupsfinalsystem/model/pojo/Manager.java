@@ -19,7 +19,7 @@ public class Manager {
   private String role;
   private Timestamp joinTime;
   private Integer status;
-  private String code;
+//  private String code;
 
   public Integer getId() {
     return id;
@@ -85,11 +85,11 @@ public class Manager {
     this.status = status;
   }
 
-  public String getCode() {
-    return code;
-  }
-
-  public void setCode(String code) {
-    this.code = code;
-  }
+//  public String getCode() {
+//    return code;
+//  }
+//
+//  public void setCode(String code) {
+//    this.code = code;
+//  }
 }
