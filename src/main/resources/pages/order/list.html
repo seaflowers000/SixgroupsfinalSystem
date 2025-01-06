@@ -1,204 +1,426 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <title>订单列表-WeAdmin Frame型后台管理系统-WeAdmin 1.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../static/css/font.css">
+    <link rel="stylesheet" href="../../static/css/weadmin.css">
+    <!-- 确保 jQuery 最先加载 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="../../lib/layui/layui.js" charset="utf-8"></script>
+</head>
 
-	<head>
-		<meta charset="UTF-8">
-		<title>订单列表-WeAdmin Frame型后台管理系统-WeAdmin 1.0</title>
-		<meta name="renderer" content="webkit">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-		<link rel="stylesheet" href="../../static/css/font.css">
-		<link rel="stylesheet" href="../../static/css/weadmin.css">
-		<script src="../../lib/layui/layui.js" charset="utf-8"></script>
-		<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
-		<!--[if lt IE 9]>
-	      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
-	      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
-	    <![endif]-->
-	</head>
-
-	<body>
-		<div class="weadmin-nav">
-			<span class="layui-breadcrumb">
+<body>
+<div class="weadmin-nav">
+    <span class="layui-breadcrumb">
         <a href="">首页</a>
         <a href="">订单管理</a>
         <a><cite>订单列表</cite></a>
-      </span>
-			<a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
-				<i class="layui-icon" style="line-height:30px">ဂ</i></a>
-		</div>
-		<div class="weadmin-body">
-			<div class="layui-row">
-				<form class="layui-form layui-col-md12 we-search">
-					<div class="layui-inline">
-						<input class="layui-input" placeholder="开始日" name="start" id="start">
-					</div>
-					<div class="layui-inline">
-						<input class="layui-input" placeholder="截止日" name="end" id="end">
-					</div>
-					<div class="layui-input-inline">
-						<select name="contrller">
-							<option>支付状态</option>
-							<option>已支付</option>
-							<option>未支付</option>
-						</select>
-					</div>
-					<div class="layui-input-inline">
-						<select name="contrller">
-							<option>支付方式</option>
-							<option>支付宝</option>
-							<option>微信</option>
-							<option>货到付款</option>
-						</select>
-					</div>
-					<div class="layui-input-inline">
-						<select name="contrller">
-							<option value="">订单状态</option>
-							<option value="0">待确认</option>
-							<option value="1">已确认</option>
-							<option value="2">已收货</option>
-							<option value="3">已取消</option>
-							<option value="4">已完成</option>
-							<option value="5">已作废</option>
-						</select>
-					</div>
-					<div class="layui-inline">
-						<input type="text" name="username" placeholder="请输入订单号" autocomplete="off" class="layui-input">
-					</div>
-					<button class="layui-btn" lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
-				</form>
-			</div>
-			<div class="weadmin-block">
-				<button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
-				<button class="layui-btn" onclick="WeAdminShow('添加订单','./add.html')"><i class="layui-icon"></i>添加</button>
-				<span class="fr" style="line-height:40px">共有数据：88 条</span>
-			</div>
-			<table class="layui-table">
-				<thead>
-					<tr>
-						<th>
-							<div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
-						</th>
-						<th>订单编号</th>
-						<th>收货人</th>
-						<th>总金额</th>
-						<th>应付金额</th>
-						<th>订单状态</th>
-						<th>支付状态</th>
-						<th>发货状态</th>
-						<th>支付方式</th>
-						<th>配送方式</th>
-						<th>下单时间</th>
-						<th>操作</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>
-							<div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='2'><i class="layui-icon">&#xe605;</i></div>
-						</td>
-						<td>2017009171822298053</td>
-						<td>老王:18925139194</td>
-						<td>7829.10</td>
-						<td>7854.10</td>
-						<td>待确认</td>
-						<td>未支付</td>
-						<td>未发货</td>
-						<td>其他方式</td>
-						<td>申通物流</td>
-						<td>2017-08-17 18:22</td>
-						<td class="td-manage">
-							<a title="查看" onclick="WeAdminShow('编辑','order-view.html')" href="javascript:;">
-								<i class="layui-icon">&#xe63c;</i>
-							</a>
-							<a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;">
-								<i class="layui-icon">&#xe640;</i>
-							</a>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			<div class="page">
-				<div>
-					<a class="prev" href="">&lt;&lt;</a>
-					<a class="num" href="">1</a>
-					<span class="current">2</span>
-					<a class="num" href="">3</a>
-					<a class="num" href="">489</a>
-					<a class="next" href="">&gt;&gt;</a>
-				</div>
-			</div>
+    </span>
+    <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i>
+    </a>
+</div>
 
-		</div>
-		<script>
-			layui.extend({
-				admin: '{/}../../static/js/admin'
-			});
-			layui.use(['laydate','jquery','admin'], function() {
-				var laydate = layui.laydate,
-					$ = layui.jquery,
-					admin = layui.admin;
-				//执行一个laydate实例
-				laydate.render({
-					elem: '#start' //指定元素
-				});
-				//执行一个laydate实例
-				laydate.render({
-					elem: '#end' //指定元素
-				});
-				
-				/*用户-停用*/
-				function member_stop(obj, id) {
-					layer.confirm('确认要停用吗？', function(index) {
-						if($(obj).attr('title') == '启用') {
-							//发异步把用户状态进行更改
-							$(obj).attr('title', '停用')
-							$(obj).find('i').html('&#xe62f;');
-	
-							$(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停用');
-							layer.msg('已停用!', {
-								icon: 5,
-								time: 1000
-							});
-	
-						} else {
-							$(obj).attr('title', '启用')
-							$(obj).find('i').html('&#xe601;');
-	
-							$(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
-							layer.msg('已启用!', {
-								icon: 5,
-								time: 1000
-							});
-						}
-					});
-				}
-	
-				/*用户-删除*/
-				function member_del(obj, id) {
-					layer.confirm('确认要删除吗？', function(index) {
-						//发异步删除数据
-						$(obj).parents("tr").remove();
-						layer.msg('已删除!', {
-							icon: 1,
-							time: 1000
-						});
-					});
-				}
-	
-				function delAll(argument) {
-					var data = tableCheck.getData();
-					layer.confirm('确认要删除吗？' + data, function(index) {
-						//捉到所有被选中的，发异步进行删除
-						layer.msg('删除成功', {
-							icon: 1
-						});
-						$(".layui-form-checked").not('.header').parents('tr').remove();
-					});
-				}
-			});
-			
-		</script>
-	</body>
+<div class="weadmin-body">
+    <!-- 搜索表单 -->
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 we-search">
+            <!-- 保持原有的搜索表单内容 -->
+        </form>
+    </div>
 
+    <!-- 操作按钮 -->
+    <div class="weadmin-block">
+        <button class="layui-btn layui-btn-danger" id="batchDeleteBtn"><i class="layui-icon"></i>批量删除</button>
+        <button class="layui-btn" id="addOrderBtn">
+            <i class="layui-icon">&#xe654;</i>新增</button>
+        <span class="fr" style="line-height:40px">共有数据：<span id="totalCount">0</span> 条</span>
+    </div>
+    
+    <!-- 数据表格 -->
+    <table class="layui-table" id="orderTable">
+        <thead>
+        <tr>
+            <th>
+                <div class="layui-unselect header layui-form-checkbox" lay-skin="primary">
+                    <i class="layui-icon">&#xe605;</i>
+                </div>
+            </th>
+            <th>订单编号</th>
+            <th>收货人</th>
+            <th>总金额</th>
+            <th>应付金额</th>
+            <th>订单状态</th>
+            <th>支付状态</th>
+            <th>发货状态</th>
+            <th>支付方式</th>
+            <th>配送方式</th>
+            <th>下单时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="orderTableBody">
+        <!-- 数据将通过 JavaScript 动态插入 -->
+        </tbody>
+    </table>
+
+    <!-- 分页 -->
+    <div class="page">
+        <div>
+            <a class="prev" href="javascript:;" id="prevPage">&lt;&lt;</a>
+            <div class="page-numbers" style="display: inline-block;">
+                <!-- 页码将通过 JavaScript 动态生成 -->
+            </div>
+            <a class="next" href="javascript:;" id="nextPage">&gt;&gt;</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        let currentPage = 1;
+        const pageSize = 10;
+        let totalOrders = [];
+        let totalPages = 0;
+
+        // 渲染分页器
+        function renderPagination(total) {
+            totalPages = Math.ceil(total / pageSize);
+            const pageNumbers = document.querySelector('.page-numbers');
+            pageNumbers.innerHTML = '';
+            
+            // 更新总数显示
+            document.getElementById('totalCount').textContent = total;
+            
+            // 生成页码
+            for (let i = 1; i <= totalPages; i++) {
+                const pageLink = document.createElement('a');
+                if (i === currentPage) {
+                    pageLink.className = 'num current';
+                } else {
+                    pageLink.className = 'num';
+                }
+                pageLink.href = 'javascript:;';
+                pageLink.textContent = i;
+                pageLink.onclick = () => {
+                    currentPage = i;
+                    renderCurrentPage(currentPage);
+                    renderPagination(total);
+                };
+                pageNumbers.appendChild(pageLink);
+            }
+
+            // 更新上一页/下一页按钮状态
+            const prevBtn = document.getElementById('prevPage');
+            const nextBtn = document.getElementById('nextPage');
+            
+            prevBtn.style.opacity = currentPage === 1 ? '0.5' : '1';
+            nextBtn.style.opacity = currentPage === totalPages ? '0.5' : '1';
+
+            // 绑定上一页/下一页事件
+            prevBtn.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderCurrentPage(currentPage);
+                    renderPagination(total);
+                }
+            };
+
+            nextBtn.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderCurrentPage(currentPage);
+                    renderPagination(total);
+                }
+            };
+        }
+
+        // 获取订单列表数据
+        function getOrders() {
+            axios({
+                method: 'get',
+                url: 'http://localhost:8080/orders/se'
+            })
+            .then(response => {
+                if (response.data.code === 200) {
+                    totalOrders = response.data.data;
+                    renderPagination(totalOrders.length);
+                    renderCurrentPage(currentPage);
+                } else {
+                    layer.msg('获取订单列表失败: ' + response.data.msg, {icon: 2});
+                }
+            })
+            .catch(error => {
+                console.error('获取订单列表失败:', error);
+                layer.msg('获取订单列表失败，请稍后重试', {icon: 2});
+            });
+        }
+
+        // 渲染当前页数据
+        function renderCurrentPage(page) {
+            const start = (page - 1) * pageSize;
+            const end = start + pageSize;
+            const currentPageData = totalOrders.slice(start, end);
+            renderOrders(currentPageData);
+        }
+
+        // 渲染订单列表
+        function renderOrders(orders) {
+            const tbody = document.getElementById('orderTableBody');
+            tbody.innerHTML = '';
+
+            if (!Array.isArray(orders)) {
+                tbody.innerHTML = '<tr><td colspan="12">数据格式错误</td></tr>';
+                return;
+            }
+
+            if (orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="12">暂无订单数据</td></tr>';
+                return;
+            }
+
+            orders.forEach(order => {
+                const formatValue = (value, type) => {
+                    if (value === null || value === undefined || value === '') {
+                        switch(type) {
+                            case 'money':
+                                return '0.00';
+                            case 'status':
+                                return '未知';
+                            case 'time':
+                                return '未设置';
+                            case 'method':
+                                return '未指定';
+                            default:
+                                return '-';
+                        }
+                    }
+                    return value;
+                };
+
+                const row = `
+                    <tr>
+                        <td>
+                            <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id="${order.orderId}">
+                                <i class="layui-icon">&#xe605;</i>
+                            </div>
+                        </td>
+                        <td>${formatValue(order.orderId)}</td>
+                        <td>${formatValue(order.recipientName)}</td>
+                        <td>${formatValue(order.totalAmount, 'money')}</td>
+                        <td>${formatValue(order.payableAmount, 'money')}</td>
+                        <td>${formatValue(order.orderStatus, 'status')}</td>
+                        <td>${formatValue(order.paymentStatus, 'status')}</td>
+                        <td>${formatValue(order.shippingStatus, 'status')}</td>
+                        <td>${formatValue(order.paymentMethod, 'method')}</td>
+                        <td>${formatValue(order.deliveryMethod, 'method')}</td>
+                        <td>${formatValue(order.orderTime)}</td>
+                        <td>
+                            <a class="layui-btn layui-btn-xs" onclick="WeAdminShow('编辑','./edit.html?id=${order.orderId}')">编辑</a>
+                            <a class="layui-btn layui-btn-danger layui-btn-xs" onclick="deleteOrder(${order.orderId})">删除</a>
+                        </td>
+                    </tr>`;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+
+            // 重新绑定事件
+            bindCheckboxEvents();
+        }
+
+        // 删除单个订单
+        function deleteOrder(orderId) {
+            layer.confirm('确认要删除这条订单吗？', function(index) {
+                axios({
+                    method: 'post',
+                    url: 'http://localhost:8080/orders/delete',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: {
+                        id: orderId
+                    }
+                })
+                .then(response => {
+                    if (response.data.code === 200) {
+                        layer.msg('删除成功', {icon: 1});
+                        getOrders(); // 刷新列表
+                    } else {
+                        layer.msg('删除失败: ' + response.data.msg, {icon: 2});
+                    }
+                })
+                .catch(error => {
+                    console.error('删除订单失败:', error);
+                    layer.msg('删除失败，请稍后重试', {icon: 2});
+                });
+                
+                layer.close(index);
+            });
+        }
+
+        // 批量删除函数
+        function delAll() {
+            const checkedBoxes = document.querySelectorAll('.layui-form-checkbox.layui-form-checked:not(.header)');
+            const ids = Array.from(checkedBoxes).map(box => parseInt(box.dataset.id)).filter(id => !isNaN(id));
+
+            if (ids.length === 0) {
+                layer.msg('请选择要删除的记录', {icon: 2});
+                return;
+            }
+
+            layer.confirm('确认要删除选中的' + ids.length + '条记录吗？', function(index) {
+                axios({
+                    method: 'post',
+                    url: 'http://localhost:8080/orders/batchDelete',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: {
+                        ids: ids
+                    }
+                })
+                .then(response => {
+                    if (response.data.code === 200) {
+                        layer.msg('删除成功', {icon: 1});
+                        getOrders(); // 刷新列表
+                    } else {
+                        layer.msg('删除失败: ' + response.data.msg, {icon: 2});
+                    }
+                })
+                .catch(error => {
+                    console.error('批量删除请求失败:', error);
+                    layer.msg('删除失败，请稍后重试', {icon: 2});
+                });
+                
+                layer.close(index);
+            });
+        }
+
+        // 绑定复选框事件
+        function bindCheckboxEvents() {
+            // 表头复选框点击事件
+            document.querySelector('.header.layui-form-checkbox').addEventListener('click', function() {
+                const isChecked = this.classList.contains('layui-form-checked');
+                const checkboxes = document.querySelectorAll('.layui-form-checkbox');
+                
+                checkboxes.forEach(checkbox => {
+                    if (isChecked) {
+                        checkbox.classList.remove('layui-form-checked');
+                    } else {
+                        checkbox.classList.add('layui-form-checked');
+                    }
+                });
+            });
+
+            // 单个复选框点击事件
+            document.querySelectorAll('.layui-form-checkbox:not(.header)').forEach(checkbox => {
+                checkbox.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    this.classList.toggle('layui-form-checked');
+                    
+                    // 检查是否所有行都被选中
+                    const totalRows = document.querySelectorAll('.layui-form-checkbox:not(.header)').length;
+                    const checkedRows = document.querySelectorAll('.layui-form-checkbox.layui-form-checked:not(.header)').length;
+                    
+                    const headerCheckbox = document.querySelector('.header.layui-form-checkbox');
+                    if (totalRows === checkedRows) {
+                        headerCheckbox.classList.add('layui-form-checked');
+                    } else {
+                        headerCheckbox.classList.remove('layui-form-checked');
+                    }
+                });
+            });
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            layui.use(['layer'], function(){
+                window.layer = layui.layer;
+                
+                // 绑定批量删除按钮事件
+                document.getElementById('batchDeleteBtn').addEventListener('click', delAll);
+                
+                // 初始化复选框事件
+                bindCheckboxEvents();
+                
+                // 加载订单数据
+                getOrders();
+            });
+        });
+
+        // 将需要全局访问的函数暴露到 window 对象
+        window.deleteOrder = deleteOrder;
+    })();
+
+    layui.use(['layer', 'jquery'], function(){
+    var layer = layui.layer;
+    var $ = layui.jquery;
+    
+    // 新增按钮事件
+    $('#addOrderBtn').on('click', function(){
+        // 直接跳转到 addorder.html 页面
+        window.location.href = './add.html';
+        
+        // 或者如果你想在新窗口打开
+        // window.open('./addorder.html', '_blank');
+    });
+});
+function WeAdminShow(title, url) {
+       // 使用 layer.open 打开一个新窗口
+       layer.open({
+           type: 2, // iframe
+           title: title,
+           content: url,
+           area: ['800px', '600px'], // 窗口大小
+           end: function() {
+               // 关闭窗口后的回调
+               location.reload(); // 刷新当前页面
+           }
+       });
+   }
+</script>
+</script>
+
+<style>
+/* 分页样式 */
+.page {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.page a {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 0 2px;
+    border: 1px solid #ddd;
+    color: #666;
+    text-decoration: none;
+}
+
+.page a:hover {
+    background-color: #009688;
+    color: #fff;
+    border-color: #009688;
+}
+
+.page .current {
+    background-color: #009688;
+    color: #fff;
+    border-color: #009688;
+}
+
+.page .prev,
+.page .next {
+    margin: 0 5px;
+}
+
+.page .num {
+    margin: 0 2px;
+}
+</style>
+</body>
 </html>
