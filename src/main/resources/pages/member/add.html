@@ -101,13 +101,11 @@
 				//监听提交
 				form.on('submit(add)', function(data) {
 					var formData = data.field;
-					
 					// 表单验证
 					if (!formData.username) {
 						layer.msg('用户名不能为空', {icon: 2});
 						return false;
 					}
-					
 					// 发送请求
 					axios({
 						method: 'post',
@@ -123,20 +121,14 @@
 						if(response.data.code === 200) {
 							layer.msg('添加成功', {
 								icon: 1,
-								time: 1000 //1秒关闭
-							}, function() {
-								// 获得frame索引
+								time: 500  // 500毫秒后关闭提示
+							}, function(){
+								// 获取索引
 								var index = parent.layer.getFrameIndex(window.name);
-								
-								// 刷新父页面的表格数据
-								parent.layui.table.reload('memberList', {
-									page: {
-										curr: 1 //重新从第 1 页开始
-									}
-								});
-								
-								// 关闭弹出层
+								// 关闭弹窗
 								parent.layer.close(index);
+								// 刷新父页面表格
+								parent.layui.table.reload('memberList');
 							});
 						} else {
 							layer.msg('添加失败：' + response.data.msg, {icon: 2});
@@ -144,10 +136,8 @@
 					}).catch(error => {
 						layer.msg('添加失败：' + error.message, {icon: 2});
 					});
-					
 					return false;
 				});
-
 			});
 		</script>
 	</body>

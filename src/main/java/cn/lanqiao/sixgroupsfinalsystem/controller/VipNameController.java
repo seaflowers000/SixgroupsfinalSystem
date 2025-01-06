@@ -29,7 +29,7 @@ public class VipNameController {
     public ResponseUtils select(){
         try {
             List<VipName> vipNameMappers = vipNameServiceImpl.selectAll();
-            System.out.println("查询结果：" + vipNameMappers);
+            // System.out.println("查询结果：" + vipNameMappers);
             
             if(vipNameMappers != null && !vipNameMappers.isEmpty()){
                 return new ResponseUtils(200, "查询成功", vipNameMappers);
