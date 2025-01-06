@@ -27,6 +27,10 @@ public interface VipNameService {
     boolean batchDelete(List<Integer> ids);
     
     /**
+     * 修改会员信息
+     */
+    boolean update(VipName vipName);
+    /**
      * 模糊查询会员
      */
     List<VipName> search(String username);

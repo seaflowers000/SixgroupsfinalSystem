@@ -45,6 +45,13 @@ public interface VipNameMapper {
     })
     int batchDelete(List<Integer> list);
     /**
+     * 修改会员信息
+     * @param username
+     * @return
+     */
+    @Update("UPDATE vip_name SET username = #{username}, gender = #{gender}, email = #{email}, address = #{address} WHERE id = #{id}")
+    int update(VipName vipName);
+    /**
      * 模糊查询会员
      */
     @Select("SELECT * FROM vip_name WHERE status = 0 AND username LIKE CONCAT('%', #{username}, '%')" )

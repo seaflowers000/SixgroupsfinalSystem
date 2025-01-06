@@ -112,6 +112,18 @@ public class VipNameController {
         }
     }
     /**
+     * 修改会员信息
+     */
+    @PostMapping("/update")
+    public ResponseUtils<String> update(@RequestBody VipName vipName) {
+        boolean result = vipNameServiceImpl.update(vipName);
+        if (result) {
+            return new ResponseUtils<>(200, "修改成功", null);
+        } else {
+            return new ResponseUtils<>(500, "修改失败", null);
+        }
+    }
+    /**
      * 模糊查询会员
      */
     @PostMapping("/likeSelect")
