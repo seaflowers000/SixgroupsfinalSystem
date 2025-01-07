@@ -1,132 +1,118 @@
-// 修改 admin 模块的路径配置
-layui.config({
-	base: '../../static/js/' // 设置模块基础路径
-}).extend({
-	admin: 'admin' , // 现在路径为 ../../static/js/admin.js
+layui.extend({
+	admin: '{/}../../static/js/admin'
 });
 
-layui.use(['table', 'jquery', 'form', 'admin', 'laydate'], function() {
+layui.use(['table', 'jquery','form', 'admin'], function() {
 	var table = layui.table,
-	$ = layui.jquery,
-	form = layui.form,
-	admin = layui.admin,
-	laydate = layui.laydate;
+		$ = layui.jquery,
+		form = layui.form,
+		admin = layui.admin;
 
-// 表格初始化
-table.render({
-	elem: '#articleList',
-	cellMinWidth: 80,
-	cols: [[
-		{type: 'checkbox'},
-		{field: 'id', title: 'ID', sort: true},
-		{field: 'title', title: '标题'},
-		{field: 'author', title: '作者'},
-		{field: 'publisher', title: '出版社'},
-		{field: 'publishDate', title: '发布时间', sort: true},
-		{field: 'kind', title: '文章种类', sort: true},
-		{field: 'operate', title: '操作', toolbar: '#operateTpl', unresize: true}
-	]],
-	url: 'http://localhost:8080/article/select',
-	method: 'get',
-	page: true,
-	response: {
-		statusName: 'code',    // 规定状态码的字段名称
-		statusCode: 200,       // 规定成功的状态码
-		msgName: 'msg',        // 规定状态信息的字段名称
-		countName: 'count',    // 规定数据总数的字段名称
-		dataName: 'data'       // 规定数据列表的字段名称
-	},
-	parseData: function(res) { // 将原始数据解析成 table 组件所规定的数据
-		return {
-			"code": res.code,
-			"msg": res.msg,
-			"count": res.data.length, // 总条数
-			"data": res.data          // 列表数据
-		};
-	},
-	done: function(res, curr, count) {
-		$('#dataCount').text(count || 0);  // 更新数据总数显示
-	}
-});
-
-	// 初始化日期选择器
-	laydate.render({
-		elem: '#start'
+	table.render({
+		elem: '#articleList',
+		cellMinWidth: 80,
+		cols: [
+			[{
+				type: 'checkbox'
+			}, {
+				field: 'id',title: 'ID',sort: true
+			}, {
+				field: 'title',title: '标题',templet: '#usernameTpl'
+			}, {
+				field: 'date',title: '发布时间',sort: true
+			}, {
+				field: 'category',title: '分类',sort: true
+			}, {
+				field: 'sort',title: '排序',sort: true
+			}, {
+				field: 'top',title: '置顶',templet: '#topTpl',unresize: true
+			},  {
+				field: 'operate',title: '操作',toolbar: '#operateTpl',unresize: true
+			}]
+		],
+		data: [{
+			"id": "1",
+			"title": "WeAdmin的第一个版本在不断地抽空完善学习中",
+			"date": "2018-02-03",
+			"category": "官方动态",
+			"sort": "1",
+			"recommend": "checked",
+			"top": "checked"
+		}, {
+			"id": "2",
+			"title": "WeAdmin的测试数据一二三四五六七",
+			"date": "2018-02-03",
+			"category": "新闻资讯",
+			"sort": "1",
+			"recommend": "",
+			"top": "checked"
+		}],
+		event: true,
+		page: true
 	});
-
-	laydate.render({
-		elem: '#end'
+	/*
+	 *数据表格中form表单元素是动态插入,所以需要更新渲染下
+	 * http://www.layui.com/doc/modules/form.html#render
+	 * */
+	$(function(){
+		form.render();
 	});
+	
+	var active = {
+		getCheckData: function() { //获取选中数据
+			var checkStatus = table.checkStatus('articleList'),
+				data = checkStatus.data;
+			//console.log(data);
+			//layer.alert(JSON.stringify(data));
+			if(data.length > 0) {
+				layer.confirm('确认要删除吗？' + JSON.stringify(data), function(index) {
+					layer.msg('删除成功', {
+						icon: 1
+					});
+					//找到所有被选中的，发异步进行删除
+					$(".layui-table-body .layui-form-checked").parents('tr').remove();
+				});
+			} else {
+				layer.msg("请先选择需要删除的文章！");
+			}
 
-	// 搜索功能
-	form.on('submit(sreach)', function(data) {
-		table.reload('articleList', {
-			where: data.field
-		});
-		return false;
-	});
+		},
 
-	// 监听工具条
-	table.on('tool(articleList)', function(obj) {
-		var data = obj.data;
-		if (obj.event === 'del') {
-			layer.confirm('确认要删除吗？', function(index) {
-				obj.del();
-				layer.close(index);
-			});
+		Top: function() {
+			layer.msg("您点击了置顶操作");
+		},
+		Review: function() {
+			layer.msg("您点击了审核操作");
 		}
-	});
 
-	// 批量删除
+	};
+
 	$('.demoTable .layui-btn').on('click', function() {
 		var type = $(this).data('type');
 		active[type] ? active[type].call(this) : '';
 	});
 
-	var active = {
-		getCheckData: function() {
-			var checkStatus = table.checkStatus('articleList'),
-				data = checkStatus.data;
-			if (data.length > 0) {
-				layer.confirm('确认要删除吗？', function(index) {
-					layer.msg('删除成功', {
-						icon: 1
-					});
-					// 执行删除操作
-				});
-			} else {
-				layer.msg("请先选择需要删除的文章！");
-			}
-		}
-	};
-	// 在table.render后添加
-// 添加文章
-// 	window.WeAdminShow = function(title, url, w, h) {
-// 		if (title == null || title == '') {
-// 			title = false;
-// 		}
-// 		if (url == null || url == '') {
-// 			url = "404.html";
-// 		}
-// 		if (w == null || w == '') {
-// 			w = 800;
-// 		}
-// 		if (h == null || h == '') {
-// 			h = ($(window).height() - 50);
-// 		}
-// 		layer.open({
-// 			type: 2,
-// 			area: [w + 'px', h + 'px'],
-// 			fix: false,
-// 			maxmin: true,
-// 			shadeClose: true,
-// 			shade: 0.4,
-// 			title: title,
-// 			content: url,
-// 			end: function() {
-// 				// 刷新表格
-// 				table.reload('articleList');
-// 			}
-// 		});
-// 	}
+	// /*用户-删除*/
+	// window.member_del = function(obj, id) {
+	// 	layer.confirm('确认要删除吗？', function(index) {
+	// 		//发异步删除数据
+	// 		$(obj).parents("tr").remove();
+	// 		layer.msg('已删除!', {
+	// 			icon: 1,
+	// 			time: 1000
+	// 		});
+	// 	});
+	// }
+
 });
+
+// function delAll(argument) {
+// 	var data = tableCheck.getData();
+// 	layer.confirm('确认要删除吗？' + data, function(index) {
+// 		//捉到所有被选中的，发异步进行删除
+// 		layer.msg('删除成功', {
+// 			icon: 1
+// 		});
+// 		$(".layui-form-checked").not('.header').parents('tr').remove();
+// 	});
+// }

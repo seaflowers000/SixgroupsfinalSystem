@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  
+
   <head>
     <meta charset="UTF-8">
     <title>添加管理员-WeAdmin Frame型后台管理系统-WeAdmin 1.0</title>
@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="../../static/css/weadmin.css">
     <!-- 添加 layui 的 css -->
     <link rel="stylesheet" href="../../lib/layui/css/layui.css">
-    
+
     <!-- 修改：使用 CDN 引入 jQuery -->
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- 其他脚本 -->
@@ -19,7 +19,7 @@
     <script src="../../js/axios.min.js"></script>
     <script src="../../js/axiosConfig.js"></script>
   </head>
-  
+
   <body>
     <div class="weadmin-body">
         <form class="layui-form">
@@ -84,7 +84,7 @@
           </div>
           <div class="layui-form-item">
               <label class="layui-form-label"></label>
-              <button class="layui-btn" lay-filter="add" lay-submit="">增加</button>
+                  <button class="layui-btn" lay-filter="add" lay-submit="" onclick="console.log('按钮被点击')">增加</button>
           </div>
       </form>
     </div>
@@ -112,7 +112,7 @@
           form.on('submit(add)', function(data){
             // 删除确认密码字段，因为不需要传到后端
             delete data.field.repass;
-            
+
             axios({
                 url: '/mang/addMag',
                 method: 'post',
@@ -132,9 +132,9 @@
                 }
             }).catch(function(error) {
                 console.error('请求失败：', error);
-                layer.msg('添加失败，请检查网络连接');
+                layer.msg('添加失败，请检查网络连接', {icon: 2});
             });
-            
+
             return false;
           });
         });
