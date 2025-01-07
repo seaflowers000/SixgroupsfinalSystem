@@ -5,16 +5,18 @@ import cn.lanqiao.sixgroupsfinalsystem.mapper.VipNameMapper;
 
 import cn.lanqiao.sixgroupsfinalsystem.model.pojo.VipName;
 import cn.lanqiao.sixgroupsfinalsystem.service.VipNameService;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.ArrayList;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
-import org.springframework.util.StringUtils;
+//import org.springframework.util.StringUtils;
 
 @Service
-public class VipNameServiceImpl implements VipNameService {
+public class
+VipNameServiceImpl implements VipNameService {
     // 依赖注入
     @Autowired
     private VipNameMapper vipNameMapper;
@@ -46,13 +48,13 @@ public class VipNameServiceImpl implements VipNameService {
         if (vipName == null || StringUtils.isEmpty(vipName.getUsername())) {
             return false;
         }
-        
+
         try {
             // 设置默认值
             if (vipName.getStatus() == null) {
                 vipName.setStatus(0);
             }
-            
+
             return vipNameMapper.insert(vipName) > 0;
         } catch (Exception e) {
             e.printStackTrace();

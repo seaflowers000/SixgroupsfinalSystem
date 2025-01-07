@@ -1,6 +1,6 @@
 package cn.lanqiao.sixgroupsfinalsystem.controller;
 
-import ch.qos.logback.core.model.Model;
+//import ch.qos.logback.core.model.Model;
 import cn.lanqiao.sixgroupsfinalsystem.mapper.ManagerMapper;
 import cn.lanqiao.sixgroupsfinalsystem.model.entity.ManagerSearch;
 import cn.lanqiao.sixgroupsfinalsystem.model.pojo.Manager;
