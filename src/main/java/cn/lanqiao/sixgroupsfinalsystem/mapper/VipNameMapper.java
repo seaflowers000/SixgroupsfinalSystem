@@ -31,6 +31,7 @@ public interface VipNameMapper {
      */
     @Update("UPDATE vip_name SET status = 1 WHERE id = #{id}")
     int deleteById(Integer id);
+    
     /**
      * 批量逻辑删除会员
      */

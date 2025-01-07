@@ -30,6 +30,7 @@ public interface VipNameService {
      * 修改会员信息
      */
     int update(VipName vipName);
+    
     /**
      * 模糊查询会员
      */

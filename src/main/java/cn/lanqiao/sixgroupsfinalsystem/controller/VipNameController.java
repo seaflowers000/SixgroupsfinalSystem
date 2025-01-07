@@ -142,5 +142,6 @@ public class VipNameController {
             return new ResponseUtils<>(500, "模糊查询失败: " + e.getMessage(), null);
         }
     }
+    
 }
 

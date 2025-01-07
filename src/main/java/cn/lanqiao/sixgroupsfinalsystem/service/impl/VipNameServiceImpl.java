@@ -114,18 +114,6 @@ public class VipNameServiceImpl implements VipNameService {
             throw new RuntimeException(e);
         }
     }
-    // @Override
-    // @Transactional(readOnly = true)  // 查询方法使用只读事务
-    // public VipName getById(Integer id) {
-    //     return vipNameMapper.selectById(id);
-    // }
-
-    // @Override
-    // @Transactional(rollbackFor = Exception.class)  // 更新方法添加事务回滚
-    // public boolean updateById(VipName vipName) {
-    //     int rows = vipNameMapper.updateById(vipName);
-    //     return rows > 0;
-    // }
 
     /**
      * 模糊查询
@@ -141,4 +129,5 @@ public class VipNameServiceImpl implements VipNameService {
             return new ArrayList<>();
         }
     }
+    
 }

@@ -128,7 +128,8 @@
 								// 关闭弹窗
 								parent.layer.close(index);
 								// 刷新父页面表格
-								parent.layui.table.reload('memberList');
+								// parent.layui.table.reload('memberList');
+								window.location.reload();
 							});
 						} else {
 							layer.msg('添加失败：' + response.data.msg, {icon: 2});
