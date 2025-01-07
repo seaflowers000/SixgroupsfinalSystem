@@ -97,17 +97,36 @@ public class VipNameServiceImpl implements VipNameService {
     }
 
     /**
-     * 修改会员信息
+     * 修改会员
      * @param vipName
      * @return
      */
     @Override
-    public boolean update(VipName vipName) {
-        if (vipName == null || StringUtils.isEmpty(vipName.getUsername())) {
-            return false;
+    public int update(VipName vipName) {
+        try {
+            final int result = vipNameMapper.update(vipName);
+            if(result>0){
+                return 1;
+            }else{
+                return 0;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return vipNameMapper.update(vipName) > 0;
     }
+    // @Override
+    // @Transactional(readOnly = true)  // 查询方法使用只读事务
+    // public VipName getById(Integer id) {
+    //     return vipNameMapper.selectById(id);
+    // }
+
+    // @Override
+    // @Transactional(rollbackFor = Exception.class)  // 更新方法添加事务回滚
+    // public boolean updateById(VipName vipName) {
+    //     int rows = vipNameMapper.updateById(vipName);
+    //     return rows > 0;
+    // }
+
     /**
      * 模糊查询
      * @param username

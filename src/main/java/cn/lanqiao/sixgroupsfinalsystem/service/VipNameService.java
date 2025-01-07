@@ -29,7 +29,7 @@ public interface VipNameService {
     /**
      * 修改会员信息
      */
-    boolean update(VipName vipName);
+    int update(VipName vipName);
     /**
      * 模糊查询会员
      */

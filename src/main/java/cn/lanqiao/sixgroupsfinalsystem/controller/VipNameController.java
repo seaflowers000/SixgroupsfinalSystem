@@ -2,7 +2,7 @@ package cn.lanqiao.sixgroupsfinalsystem.controller;
 
 
 import cn.lanqiao.sixgroupsfinalsystem.model.pojo.VipName;
-
+import cn.lanqiao.sixgroupsfinalsystem.service.VipNameService;
 import cn.lanqiao.sixgroupsfinalsystem.service.impl.VipNameServiceImpl;
 import cn.lanqiao.sixgroupsfinalsystem.utils.ResponseUtils;
 import io.micrometer.common.util.StringUtils;
@@ -19,7 +19,7 @@ import java.util.Map;
 @CrossOrigin
 public class VipNameController {
     @Autowired
-    private VipNameServiceImpl vipNameServiceImpl;
+    private VipNameService vipNameService;
 
     /**
      * 会员列表查询所有
@@ -28,7 +28,7 @@ public class VipNameController {
     @GetMapping("/select")
     public ResponseUtils select(){
         try {
-            List<VipName> vipNameMappers = vipNameServiceImpl.selectAll();
+            List<VipName> vipNameMappers = vipNameService.selectAll();
             // System.out.println("查询结果：" + vipNameMappers);
             
             if(vipNameMappers != null && !vipNameMappers.isEmpty()){
@@ -56,7 +56,7 @@ public class VipNameController {
             // 设置默认状态
             vipName.setStatus(0);
             
-            boolean result = vipNameServiceImpl.add(vipName);
+            boolean result = vipNameService.add(vipName);
             if (result) {
                 return new ResponseUtils<>(200, "添加成功", null);
             } else {
@@ -78,7 +78,7 @@ public class VipNameController {
             if (id == null) {
                 return new ResponseUtils<>(400, "参数错误", null);
             }
-            boolean result = vipNameServiceImpl.deleteById(id);
+            boolean result = vipNameService.deleteById(id);
             if (result) {
                 return new ResponseUtils<>(200, "删除成功", null);
             } else {
@@ -100,7 +100,7 @@ public class VipNameController {
             if (ids == null || ids.isEmpty()) {
                 return new ResponseUtils<>(400, "参数错误", null);
             }
-            boolean result = vipNameServiceImpl.batchDelete(ids);
+            boolean result = vipNameService.batchDelete(ids);
             if (result) {
                 return new ResponseUtils<>(200, "批量删除成功", null);
             } else {
@@ -116,11 +116,16 @@ public class VipNameController {
      */
     @PostMapping("/update")
     public ResponseUtils<String> update(@RequestBody VipName vipName) {
-        boolean result = vipNameServiceImpl.update(vipName);
-        if (result) {
-            return new ResponseUtils<>(200, "修改成功", null);
-        } else {
-            return new ResponseUtils<>(500, "修改失败", null);
+        try {
+            int result = vipNameService.update(vipName);
+            if(result == 1){
+                return new ResponseUtils(200,"修改成功");
+            }else{
+                return new ResponseUtils(500,"修改失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();//打印报错信息
+            return new ResponseUtils(400,"会员修改异常");
         }
     }
     /**
@@ -130,7 +135,7 @@ public class VipNameController {
     public ResponseUtils<List<VipName>> search(@RequestBody Map<String, Object> params) {
         try {
             String username = (String) params.get("username");
-            List<VipName> result = vipNameServiceImpl.search(username);
+            List<VipName> result = vipNameService.search(username);
             return new ResponseUtils<>(200, "模糊查询成功", result);
         } catch (Exception e) {
             e.printStackTrace();
