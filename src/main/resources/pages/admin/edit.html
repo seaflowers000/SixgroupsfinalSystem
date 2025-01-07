@@ -16,19 +16,39 @@
     <![endif]-->
   </head>
 
+
   <body>
-    <div class="weadmin-body">
-        <form class="layui-form">
+  <div class="weadmin-body">
+      <form class="layui-form" lay-filter="editForm">
+          <input type="hidden" name="id" id="id">
           <div class="layui-form-item">
-              <label for="username" class="layui-form-label">
+              <label for="loginName" class="layui-form-label">
                   <span class="we-red">*</span>登录名
               </label>
               <div class="layui-input-inline">
-                  <input type="text" id="username" name="username" required="" lay-verify="required"
-                  autocomplete="off" value="admin" class="layui-input">
+                  <input type="text" id="loginName" name="loginName" required lay-verify="required"
+                         autocomplete="off" class="layui-input">
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="password" class="layui-form-label">
+                  <span class="we-red">*</span>密码
+              </label>
+              <div class="layui-input-inline">
+                  <input type="password" id="password" name="password" required lay-verify="required|pass"
+                         autocomplete="off" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
-                  <span class="we-red">*</span>将会成为您唯一的登入名
+                  6到12个字符
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="repass" class="layui-form-label">
+                  <span class="we-red">*</span>确认密码
+              </label>
+              <div class="layui-input-inline">
+                  <input type="password" id="repass" name="repass" required lay-verify="required|repass"
+                         autocomplete="off" class="layui-input">
               </div>
           </div>
           <div class="layui-form-item">
@@ -36,72 +56,46 @@
                   <span class="we-red">*</span>手机
               </label>
               <div class="layui-input-inline">
-                  <input type="text" value="18925139194" id="phone" name="phone" required="" lay-verify="phone"
-                  autocomplete="off" class="layui-input">
-              </div>
-              <div class="layui-form-mid layui-word-aux">
-                  <span class="we-red">*</span>将会成为您唯一的登入名
+                  <input type="text" id="phone" name="phone" required lay-verify="phone"
+                         autocomplete="off" class="layui-input">
               </div>
           </div>
           <div class="layui-form-item">
-              <label for="L_email" class="layui-form-label">
+              <label for="email" class="layui-form-label">
                   <span class="we-red">*</span>邮箱
               </label>
               <div class="layui-input-inline">
-                  <input type="text" value="113664000@qq.com" id="L_email" name="email" required="" lay-verify="email"
-                  autocomplete="off" class="layui-input">
-              </div>
-              <div class="layui-form-mid layui-word-aux">
-                  <span class="we-red">*</span>
+                  <input type="text" id="email" name="email" required lay-verify="email"
+                         autocomplete="off" class="layui-input">
               </div>
           </div>
           <div class="layui-form-item">
               <label class="layui-form-label"><span class="we-red">*</span>角色</label>
               <div class="layui-input-block">
-                <input type="checkbox" name="like1[write]" lay-skin="primary" title="超级管理员" checked="">
-                <input type="checkbox" name="like1[read]" lay-skin="primary" title="编辑人员">
-                <input type="checkbox" name="like1[write]" lay-skin="primary" title="宣传人员" >
+                  <select name="role" lay-verify="required">
+                      <option value="">请选择角色</option>
+                      <option value="超级管理员">超级管理员</option>
+                      <option value="普通管理员">普通管理员</option>
+                      <option value="编辑人员">编辑人员</option>
+                  </select>
               </div>
           </div>
           <div class="layui-form-item">
-              <label for="L_pass" class="layui-form-label">
-                  <span class="we-red">*</span>密码
-              </label>
-              <div class="layui-input-inline">
-                  <input type="password" id="L_pass" name="pass" required="" lay-verify="pass"
-                  autocomplete="off" class="layui-input">
-              </div>
-              <div class="layui-form-mid layui-word-aux">
-                  6到16个字符
-              </div>
-          </div>
-          <div class="layui-form-item">
-              <label for="L_repass" class="layui-form-label">
-                  <span class="we-red">*</span>确认密码
-              </label>
-              <div class="layui-input-inline">
-                  <input type="password" id="L_repass" name="repass" required="" lay-verify="repass"
-                  autocomplete="off" class="layui-input">
-              </div>
-          </div>
-          <div class="layui-form-item">
-              <label for="L_repass" class="layui-form-label">
-              </label>
-              <button  class="layui-btn" lay-filter="add" lay-submit="">
-                  增加
-              </button>
+              <label class="layui-form-label"></label>
+              <button class="layui-btn" lay-filter="edit" lay-submit="">修改</button>
           </div>
       </form>
-    </div>
+  </div>
 		<script src="../../lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript">
     	layui.extend({
 				admin: '{/}../../static/js/admin'
 			});
-	    layui.use(['form','layer','admin'], function(){
+	    layui.use(['form','layer','admin','jquery'], function(){
 	      var form = layui.form,
 	      	admin = layui.admin,
-	      	layer = layui.layer;
+	      	layer = layui.layer,
+	      	$ = layui.jquery;
 
           //自定义验证规则
           form.verify({
@@ -118,17 +112,71 @@
             }
           });
 
-          //监听提交
-          form.on('submit(add)', function(data){
-            console.log(data);
-            //发异步，把数据提交给php
-            layer.alert("增加成功", {icon: 6},function () {
-                // 获得frame索引
-                var index = parent.layer.getFrameIndex(window.name);
-                //关闭当前frame
-                parent.layer.close(index);
-            });
-            return false;
+          // 获取URL中的id参数
+          var urlParams = new URLSearchParams(window.location.search);
+          var id = urlParams.get('id');
+          
+          // 如果是编辑模式，加载用户数据
+          if(id) {
+              // 设置隐藏字段的值
+              $('#id').val(id);
+              
+              // 加载用户数据
+              $.ajax({
+                  url: '/mang/getUser',
+                  type: 'GET',
+                  data: {id: id},
+                  success: function(res) {
+                      if(res.code === 200) {
+                          // 使用form.val()统一设置表单数据
+                          form.val('editForm', {
+                              "id": res.data.id,
+                              "loginName": res.data.loginName,
+                              "phone": res.data.phone,
+                              "email": res.data.email,
+                              "role": res.data.role
+                          });
+                          
+                          // 重新渲染表单
+                          form.render();
+                      } else {
+                          layer.msg('获取用户数据失败：' + res.msg);
+                      }
+                  }
+              });
+          }
+
+          // 监听提交
+          form.on('submit(edit)', function(data) {
+              // 确保ID被包含在提交数据中
+              data.field.id = $('#id').val();
+              
+              console.log('提交的数据：', data.field); // 添加日志
+              
+              $.ajax({
+                  url: '/mang/updateUser',
+                  type: 'POST',
+                  contentType: 'application/json',
+                  data: JSON.stringify(data.field),
+                  success: function(res) {
+                      if(res.code === 200) {
+                          layer.alert("修改成功", {icon: 6}, function() {
+                              // 获得frame索引
+                              var index = parent.layer.getFrameIndex(window.name);
+                              // 关闭当前frame
+                              parent.layer.close(index);
+                              // 刷新父页面
+                              parent.location.reload();
+                          });
+                      } else {
+                          layer.msg('修改失败：' + res.msg);
+                      }
+                  },
+                  error: function() {
+                      layer.msg('修改失败，请检查网络连接');
+                  }
+              });
+              return false;
           });
 
         });
