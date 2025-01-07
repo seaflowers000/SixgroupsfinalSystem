@@ -171,66 +171,71 @@
 
         // 渲染订单列表
         function renderOrders(orders) {
-            const tbody = document.getElementById('orderTableBody');
-            tbody.innerHTML = '';
+    const tbody = document.getElementById('orderTableBody');
+    tbody.innerHTML = '';
 
-            if (!Array.isArray(orders)) {
-                tbody.innerHTML = '<tr><td colspan="12">数据格式错误</td></tr>';
-                return;
+    if (!Array.isArray(orders)) {
+        tbody.innerHTML = '<tr><td colspan="12">数据格式错误</td></tr>';
+        return;
+    }
+
+    if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="12">暂无订单数据</td></tr>';
+        return;
+    }
+
+    orders.forEach(order => {
+        const formatValue = (value, type) => {
+            if (value === null || value === undefined || value === '') {
+                switch(type) {
+                    case 'money':
+                        return '0.00';
+                    case 'status':
+                        return '未知';
+                    case 'time':
+                        return '未设置';
+                    case 'method':
+                        return '未指定';
+                    default:
+                        return '-';
+                }
             }
-
-            if (orders.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="12">暂无订单数据</td></tr>';
-                return;
+            if (type === 'time') {
+                // 格式化时间
+                const date = new Date(value);
+                return date.toLocaleString(); // 使用本地时间格式
             }
+            return value;
+        };
 
-            orders.forEach(order => {
-                const formatValue = (value, type) => {
-                    if (value === null || value === undefined || value === '') {
-                        switch(type) {
-                            case 'money':
-                                return '0.00';
-                            case 'status':
-                                return '未知';
-                            case 'time':
-                                return '未设置';
-                            case 'method':
-                                return '未指定';
-                            default:
-                                return '-';
-                        }
-                    }
-                    return value;
-                };
+        const row = `
+            <tr>
+                <td>
+                    <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id="${order.orderId}">
+                        <i class="layui-icon">&#xe605;</i>
+                    </div>
+                </td>
+                <td>${formatValue(order.orderId)}</td>
+                <td>${formatValue(order.recipientName)}</td>
+                <td>${formatValue(order.totalAmount, 'money')}</td>
+                <td>${formatValue(order.payableAmount, 'money')}</td>
+                <td>${formatValue(order.orderStatus, 'status')}</td>
+                <td>${formatValue(order.paymentStatus, 'status')}</td>
+                <td>${formatValue(order.shippingStatus, 'status')}</td>
+                <td>${formatValue(order.paymentMethod, 'method')}</td>
+                <td>${formatValue(order.deliveryMethod, 'method')}</td>
+                <td>${formatValue(order.orderTime, 'time')}</td> <!-- 这里调用格式化函数 -->
+                <td>
+                    <a class="layui-btn layui-btn-xs" onclick="WeAdminShow('编辑','./edit.html?id=${order.orderId}')">编辑</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" onclick="deleteOrder(${order.orderId})">删除</a>
+                </td>
+            </tr>`;
+        tbody.insertAdjacentHTML('beforeend', row);
+    });
 
-                const row = `
-                    <tr>
-                        <td>
-                            <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id="${order.orderId}">
-                                <i class="layui-icon">&#xe605;</i>
-                            </div>
-                        </td>
-                        <td>${formatValue(order.orderId)}</td>
-                        <td>${formatValue(order.recipientName)}</td>
-                        <td>${formatValue(order.totalAmount, 'money')}</td>
-                        <td>${formatValue(order.payableAmount, 'money')}</td>
-                        <td>${formatValue(order.orderStatus, 'status')}</td>
-                        <td>${formatValue(order.paymentStatus, 'status')}</td>
-                        <td>${formatValue(order.shippingStatus, 'status')}</td>
-                        <td>${formatValue(order.paymentMethod, 'method')}</td>
-                        <td>${formatValue(order.deliveryMethod, 'method')}</td>
-                        <td>${formatValue(order.orderTime)}</td>
-                        <td>
-                            <a class="layui-btn layui-btn-xs" onclick="WeAdminShow('编辑','./edit.html?id=${order.orderId}')">编辑</a>
-                            <a class="layui-btn layui-btn-danger layui-btn-xs" onclick="deleteOrder(${order.orderId})">删除</a>
-                        </td>
-                    </tr>`;
-                tbody.insertAdjacentHTML('beforeend', row);
-            });
-
-            // 重新绑定事件
-            bindCheckboxEvents();
-        }
+    // 重新绑定事件
+    bindCheckboxEvents();
+}
 
         // 删除单个订单
         function deleteOrder(orderId) {
