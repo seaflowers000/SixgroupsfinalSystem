@@ -7,6 +7,6 @@ import cn.lanqiao.sixgroupsfinalsystem.model.vo.MagVO;
 
 public interface SixmagService {
     Manager login(SixmagLogin manager);
-    int register(Manager manager);
+
 
 }

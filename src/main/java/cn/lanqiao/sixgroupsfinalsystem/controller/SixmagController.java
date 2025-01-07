@@ -33,31 +33,23 @@ public class SixmagController {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
     private static final ObjectMapper mapper=new ObjectMapper();
-    //注册
-//    @RequestMapping("/register")
-//    public ResponseUtils<String> register(@RequestBody Manager mag, HttpServletRequest request){
-//        try {
-//            HttpSession session = request.getSession();
-//            String verificationCode=(String) session.getAttribute("verificationcode");
-//            String userCode = mag.getCode();
-//            if (verificationCode.equalsIgnoreCase(userCode)){
-//                int result = SixmagService.register(mag);
-//                return (result == 1) ? new ResponseUtils<String>(200, "注册成功") : new ResponseUtils<String>(500, "注册失败");
-//            }else{
-//                return new ResponseUtils<String>(500,"验证码错误");
-//            }
-//
-//
-//        }catch (Exception e){
-//            e.printStackTrace();
-//            return  new ResponseUtils<String>(400,"数据注册异常");
-//        }
-//    }
     //登录
     @RequestMapping("/login")
-        public ResponseUtils<MagVO> login(@RequestBody SixmagLogin loginForm, HttpServletResponse response) {
+        public ResponseUtils<MagVO> login(@RequestBody SixmagLogin loginForm, HttpServletRequest request, HttpServletResponse response) {
             try {
-                // 调用service层验证登录
+                // 1. 验证码校验
+                HttpSession session = request.getSession();
+                String verificationCode = (String) session.getAttribute("verificationcode");
+                String inputCode = loginForm.getCode();
+
+                // 验证码为空或不匹配
+                if (verificationCode == null || !verificationCode.equalsIgnoreCase(inputCode)) {
+                    return new ResponseUtils<>(306, "验证码错误", null);
+                }
+                // 验证码使用后立即清除，防止重复使用
+                session.removeAttribute("verificationcode");
+
+                // 2. 调用service层验证登录
                 Manager manager = SixmagService.login(loginForm);
 
                 if (manager != null) {
