@@ -52,6 +52,18 @@
             <optional>true</optional>
         </dependency>
 
+
+
+<!--        <dependency>-->
+<!--            <groupId>org.slf4j</groupId>-->
+<!--            <artifactId>slf4j-api</artifactId>-->
+<!--            <version>1.7.30</version> &lt;!&ndash; SLF4J 和 Logback 依赖（Maven） &ndash;&gt;-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>ch.qos.logback</groupId>-->
+<!--            <artifactId>logback-classic</artifactId>-->
+<!--            <version>1.2.3</version> &lt;!&ndash; SLF4J 和 Logback 依赖（Maven） &ndash;&gt;-->
+<!--        </dependency>-->
         <!-- Thymeleaf 模板引擎的场景启动器 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -139,6 +151,7 @@
             <version>1.18.30</version>
             <scope>provided</scope>
         </dependency>
+
 
         <!--Jackson依赖-->
         <dependency>
@@ -230,6 +243,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
+                            <version>1.18.30</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
@@ -248,5 +262,9 @@
             </plugin>
         </plugins>
     </build>
+    ————————————————
 
+    版权声明：本文为博主原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明。
+
+    原文链接：https://blog.csdn.net/weixin_37477009/article/details/144795339
 </project>
