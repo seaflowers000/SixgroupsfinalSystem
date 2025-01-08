@@ -43,6 +43,6 @@ public interface VipNameDelMapper {
     /**
      * 模糊查询会员
      */
-    @Select("SELECT * FROM vip_name WHERE status = 0 AND username LIKE CONCAT('%', #{username}, '%')" )
+    @Select("SELECT * FROM vip_name WHERE status = 1 AND username LIKE CONCAT('%', #{username}, '%')" )
     List<VipName> search(@Param("username") String username);
 }
