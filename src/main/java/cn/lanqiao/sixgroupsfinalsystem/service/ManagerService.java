@@ -15,4 +15,6 @@ public interface ManagerService {
 //     模糊查询
 
     List<Manager> likeselect(String loginname);
+
+    int insertSelective(Manager record);
 }

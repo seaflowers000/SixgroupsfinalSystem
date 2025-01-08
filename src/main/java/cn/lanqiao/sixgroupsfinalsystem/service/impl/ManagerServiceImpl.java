@@ -56,4 +56,10 @@ public class ManagerServiceImpl implements ManagerService {
             return managerMapper.likeselect(loginname);
         } catch (Exception e) {e.printStackTrace();return new ArrayList<>();}
     }
+
+    @Override
+    public int insertSelective(Manager record) {
+        int i = managerMapper.insertSelective(record);
+        return i;
+    }
 }
