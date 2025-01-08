@@ -8,6 +8,9 @@ import cn.lanqiao.sixgroupsfinalsystem.service.VipNameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+
+import javax.naming.spi.DirStateFactory.Result;
+
 import java.util.ArrayList;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
@@ -94,6 +97,25 @@ public class VipNameServiceImpl implements VipNameService {
     }
 
     /**
+     * 修改会员
+     * @param vipName
+     * @return
+     */
+    @Override
+    public int update(VipName vipName) {
+        try {
+            final int result = vipNameMapper.update(vipName);
+            if(result>0){
+                return 1;
+            }else{
+                return 0;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * 模糊查询
      * @param username
      * @return
@@ -107,4 +129,5 @@ public class VipNameServiceImpl implements VipNameService {
             return new ArrayList<>();
         }
     }
+    
 }

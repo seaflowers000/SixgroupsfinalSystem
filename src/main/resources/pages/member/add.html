@@ -32,7 +32,7 @@
 					<div class="layui-input-block">
 						<input type="radio" name="gender" value="男" title="男" checked>
 						<input type="radio" name="gender" value="女" title="女">
-						<input type="radio" name="gender" value="未知" title="未知">
+
 					</div>
 				</div>
 				
@@ -101,11 +101,13 @@
 				//监听提交
 				form.on('submit(add)', function(data) {
 					var formData = data.field;
+					
 					// 表单验证
 					if (!formData.username) {
 						layer.msg('用户名不能为空', {icon: 2});
 						return false;
 					}
+					
 					// 发送请求
 					axios({
 						method: 'post',
@@ -119,16 +121,21 @@
 						}
 					}).then(response => {
 						if(response.data.code === 200) {
+							console.log('添加成功，准备刷新页面');
 							layer.msg('添加成功', {
 								icon: 1,
 								time: 500  // 500毫秒后关闭提示
 							}, function(){
-								// 获取索引
+								console.log('准备关闭弹窗');
 								var index = parent.layer.getFrameIndex(window.name);
-								// 关闭弹窗
 								parent.layer.close(index);
-								// 刷新父页面表格
-								parent.layui.table.reload('memberList');
+								console.log('准备刷新父页面表格');
+								// 刷新父页面的表格
+								parent.layui.table.reload('memberList', {
+									page: {
+										curr: 1
+									}
+								});
 							});
 						} else {
 							layer.msg('添加失败：' + response.data.msg, {icon: 2});
@@ -136,7 +143,8 @@
 					}).catch(error => {
 						layer.msg('添加失败：' + error.message, {icon: 2});
 					});
-					return false;
+					
+					return false; // 阻止表单默认提交
 				});
 			});
 		</script>
