@@ -35,19 +35,11 @@ public interface VipNameMapper {
     /**
      * 批量逻辑删除会员
      */
-    @Update({
-        "<script>",
-        "UPDATE vip_name SET status = 1",
-        "WHERE id IN",
-        "<foreach collection='list' item='item' open='(' separator=',' close=')'>",
-        "#{item}",
-        "</foreach>",
-        "</script>"
-    })
+    @Update("UPDATE vip_name SET status = 1 WHERE id IN #{id}")
     int batchDelete(List<Integer> list);
     /**
      * 修改会员信息
-     * @param username
+     * @param
      * @return
      */
     @Update("UPDATE vip_name SET username = #{username}, gender = #{gender}, email = #{email}, address = #{address} WHERE id = #{id}")
