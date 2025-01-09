@@ -57,7 +57,7 @@ layui.use(['table', 'jquery','form', 'admin'], function() {
 	$(function(){
 		form.render();
 	});
-	
+
 	var active = {
 		getCheckData: function() { //获取选中数据
 			var checkStatus = table.checkStatus('articleList'),

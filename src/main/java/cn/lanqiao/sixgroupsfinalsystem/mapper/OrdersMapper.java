@@ -1,11 +1,7 @@
 package cn.lanqiao.sixgroupsfinalsystem.mapper;
 
 import cn.lanqiao.sixgroupsfinalsystem.model.pojo.Orders;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 @Mapper
@@ -39,5 +35,7 @@ public interface OrdersMapper {
 int update(Orders orders);
 @Select("SELECT * FROM orders WHERE order_id = #{orderId}")
 Orders getById(Integer orderId);
-
+//根据订单
+//@Select("SELECT * FROM orders WHERE recipient_name LIKE CONCAT('%', #{keyword}, '%') OR order_status LIKE CONCAT('%', #{keyword}, '%')")
+//List<Orders> searchOrders(@Param("keyword") String keyword);
 }

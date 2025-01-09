@@ -131,4 +131,14 @@ public ResponseUtils<String> update(@RequestBody Orders order) {
     } else {
         return new ResponseUtils<>(500, "更新失败", null);
     }}
+//    @GetMapping("/search")
+//    public ResponseUtils<List<Orders>> search(@RequestParam String keyword) {
+//        List<Orders> orders = ordersService.searchOrders(keyword);
+//        System.out.println("模糊查询结果: " + orders);
+//        if (orders != null && !orders.isEmpty()) {
+//            return new ResponseUtils<>(200, "success", orders);
+//        } else {
+//            return new ResponseUtils<>(0, "未找到相关数据", new ArrayList<>());
+//        }
+//    }
 }

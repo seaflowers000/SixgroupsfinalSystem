@@ -24,78 +24,101 @@
 <div class="weadmin-body">
     <form class="layui-form">
         <div class="layui-form-item">
-            <label for="categoryName" class="layui-form-label">文章标题</label>
+            <label for="title" class="layui-form-label">文章标题</label>
             <div class="layui-input-inline">
-                <input type="text" id="categoryName" name="categoryName" autocomplete="off" class="layui-input">
+                <input type="text" id="title" name="title" required lay-verify="required"
+                       autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label for="categoryName" class="layui-form-label">作者</label>
+            <label for="author" class="layui-form-label">作者</label>
             <div class="layui-input-inline">
-                <input type="text" id="categoryCtg" name="categoryCtg" autocomplete="off" class="layui-input">
+                <input type="text" id="author" name="author" required lay-verify="required"
+                       autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label for="categoryName" class="layui-form-label">出版社</label>
+            <label for="publisher" class="layui-form-label">出版社</label>
             <div class="layui-input-inline">
-                <input type="text" id="categoryAuthor" name="categoryAuthor" autocomplete="off" class="layui-input">
+                <input type="text" id="publisher" name="publisher" required lay-verify="required"
+                       autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label for="categoryName" class="layui-form-label">发布时间</label>
+            <label for="publisher" class="layui-form-label">发布时间</label>
             <div class="layui-input-inline">
-                <input type="text" id="categoryTime" name="categoryTime" autocomplete="off" class="layui-input">
+                <input type="text" id="publishDate" name="publishDate" required lay-verify="required"
+                       autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label for="categoryName" class="layui-form-label">文章种类</label>
+            <label for="kind" class="layui-form-label">文章种类</label>
             <div class="layui-input-inline">
-                <input type="text" id="categoryKind" name="categoryKind" autocomplete="off" class="layui-input">
+                <input type="text" id="kind" name="kind" required lay-verify="required"
+                       autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <button class="layui-btn" lay-submit lay-filter="add">立即提交</button>
+                <button class="layui-btn" lay-submit lay-filter="add" onclick="add();">立即提交</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
             </div>
         </div>
     </form>
-    <script>
-        layui.use(['form','layer'], function(){
-            var form = layui.form,
-                layer = layui.layer;
-
-            //监听提交
-            form.on('submit(add)', function(data){
-                // 获取表单数据
-                const formData = {
-                    title: data.field.categoryName,
-                    category: data.field.categoryCtg,
-                    author: data.field.categoryAuthor,
-                    publishTime: data.field.categoryTime
-                };
-
-                // 发送 axios 请求
-                axios.post('/api/article/add', formData)
-                    .then(function (response) {
-                        if(response.data.code === 200) {
-                            layer.alert("增加成功", {icon: 6}, function () {
-                                // 获得frame索引
-                                var index = parent.layer.getFrameIndex(window.name);
-                                //关闭当前frame
-                                parent.layer.close(index);
-                            });
-                        } else {
-                            layer.alert("添加失败：" + response.data.msg);
-                        }
-                    })
-                    .catch(function (error) {
-                        layer.alert("系统错误：" + error.message);
-                    });
-                return false;
-            });
-        });
-    </script>
+</div>
 </body>
-
 </html>
+<!-- 保持HTML部分不变，修改script部分 -->
+
+<!-- 引入必要的JS -->
+<script src="../../lib/layui/layui.js" charset="utf-8"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/1.5.0/axios.js"></script>
+
+<script>
+    layui.use(['form', 'layer', 'laydate'], function() {
+        var form = layui.form,
+            layer = layui.layer,
+            laydate = layui.laydate;
+
+        // 初始化日期选择器
+        laydate.render({
+            elem: '#publishDate'
+        });
+
+        // 监听表单提交
+        form.on('submit(add)', function(data) {
+            // 阻止表单默认提交
+            event.preventDefault();
+
+            // 发送请求
+            axios({
+                method: 'post',
+                url: 'http://localhost:8080/article/add',
+                data: data.field,  // 表单数据
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(function(response) {
+                if (response.data.code === 200) {
+                    layer.alert("添加成功", {icon: 6}, function() {
+                        // 获得frame索引
+                        var index = parent.layer.getFrameIndex(window.name);
+                        // 关闭当前frame
+                        parent.layer.close(index);
+                        // 刷新父页面
+                        parent.location.reload();
+                    });
+                } else {
+                    layer.msg('添加失败：' + response.data.msg);
+                }
+            }).catch(function(error) {
+                console.error('请求失败：', error);
+                layer.msg('添加失败，请检查网络连接');
+            });
+
+            return false;
+        });
+    });
+
+    // 删除原来的add函数，因为我们使用layui的表单提交
+</script>

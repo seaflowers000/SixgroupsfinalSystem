@@ -22,11 +22,11 @@
 				<div class="layui-form-item">
 					<label class="layui-form-label">用户名</label>
 					<div class="layui-input-inline">
-						<input type="text" name="username" required lay-verify="required" 
+						<input type="text" name="username" required lay-verify="required"
 							   placeholder="请输入用户名" autocomplete="off" class="layui-input">
 					</div>
 				</div>
-				
+
 				<div class="layui-form-item">
 					<label class="layui-form-label">性别</label>
 					<div class="layui-input-block">
@@ -35,23 +35,23 @@
 
 					</div>
 				</div>
-				
+
 				<div class="layui-form-item">
 					<label class="layui-form-label">邮箱</label>
 					<div class="layui-input-inline">
-						<input type="text" name="email" lay-verify="email" 
+						<input type="text" name="email" lay-verify="email"
 							   placeholder="请输入邮箱" autocomplete="off" class="layui-input">
 					</div>
 				</div>
-				
+
 				<div class="layui-form-item">
 					<label class="layui-form-label">地址</label>
 					<div class="layui-input-inline">
-						<input type="text" name="address" placeholder="请输入地址" 
+						<input type="text" name="address" placeholder="请输入地址"
 							   autocomplete="off" class="layui-input">
 					</div>
 				</div>
-				
+
 				<div class="layui-form-item">
 					<div class="layui-input-block">
 						<button class="layui-btn" lay-submit lay-filter="add">立即提交</button>
@@ -101,13 +101,13 @@
 				//监听提交
 				form.on('submit(add)', function(data) {
 					var formData = data.field;
-					
+
 					// 表单验证
 					if (!formData.username) {
 						layer.msg('用户名不能为空', {icon: 2});
 						return false;
 					}
-					
+
 					// 发送请求
 					axios({
 						method: 'post',
@@ -143,7 +143,7 @@
 					}).catch(error => {
 						layer.msg('添加失败：' + error.message, {icon: 2});
 					});
-					
+
 					return false; // 阻止表单默认提交
 				});
 			});

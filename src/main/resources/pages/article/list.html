@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 	<meta charset="UTF-8">
 	<title>文章列表-WeAdmin Frame型后台管理系统-WeAdmin 1.0</title>
@@ -10,24 +9,18 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
 	<link rel="stylesheet" href="../../static/css/font.css">
 	<link rel="stylesheet" href="../../static/css/weadmin.css">
-	<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
-	<!--[if lt IE 9]>
-	<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
-	<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
-	<![endif]-->
 	<style type="text/css">
-		body{overflow-y: scroll;}
+		body { overflow-y: scroll; }
 	</style>
-	<script src="../../lib/layui/layui.js" charset="utf-8"></script>
 </head>
 
 <body>
 <div class="weadmin-nav">
-        <span class="layui-breadcrumb">
-            <a href="">首页</a>
-            <a href="">文章管理</a>
-            <a><cite>文章列表</cite></a>
-        </span>
+    <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">文章管理</a>
+        <a><cite>文章列表</cite></a>
+    </span>
 	<a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right"
 	   href="javascript:location.replace(location.href);" title="刷新">
 		<i class="layui-icon" style="line-height:30px">&#x1002;</i>
@@ -36,37 +29,30 @@
 
 <div class="weadmin-body">
 	<div class="layui-row">
-		<form class="layui-form layui-col-md12 we-search">
+		<form class="layui-form layui-col-md12 we-search" id="searchForm">
 			文章搜索：
 			<div class="layui-inline">
-				<input class="layui-input" placeholder="开始日" name="start" id="start">
+				<input type="text" name="keyword" placeholder="请输入关键字" autocomplete="off" class="layui-input" id="searchKeyword">
 			</div>
-			<div class="layui-inline">
-				<input class="layui-input" placeholder="截止日" name="end" id="end">
-			</div>
-			<div class="layui-inline">
-				<input type="text" name="keyword" placeholder="请输入关键字" autocomplete="off" class="layui-input">
-			</div>
-			<button class="layui-btn" lay-submit="" lay-filter="sreach">
+			<button class="layui-btn" lay-submit lay-filter="sreach" id="searchSubmit">
 				<i class="layui-icon">&#xe615;</i>
 			</button>
 		</form>
 	</div>
 
 	<div class="weadmin-block demoTable">
-		<button class="layui-btn layui-btn-danger" data-type="getCheckData">
+		<button class="layui-btn layui-btn-danger" data-type="getCheckData" onclick="delAll()">
 			<i class="layui-icon">&#xe640;</i>批量删除
 		</button>
 		<button class="layui-btn" onclick="WeAdminShow('添加文章','./add.html',600,400)">
 			<i class="layui-icon">&#xe61f;</i>添加
 		</button>
-		<span class="fr" style="line-height:40px">共有数据：<span id="dataCount">0</span> 条</span>
 	</div>
 
 	<table class="layui-hide" id="articleList"></table>
 
 	<script type="text/html" id="operateTpl">
-		<a title="编辑" onclick="WeAdminEdit('编辑','./edit.html', {{d.id}}, 600, 400)" href="javascript:;">
+		<a onclick="WeAdminEdit('编辑','./edit.html?id={{d.id}}', {{d.id}}, 600, 400)">
 			<i class="layui-icon">&#xe642;</i>
 		</a>
 		<a title="查看" onclick="WeAdminShow('查看文章','./show.html?id={{d.id}}',600,400)" href="javascript:;">
@@ -76,11 +62,182 @@
 			<i class="layui-icon">&#xe640;</i>
 		</a>
 	</script>
-
-	<script src="../../lib/layui/layui.js" charset="utf-8"></script>
-	<script src="list.js" type="text/javascript" charset="utf-8"></script>
+	<div class="page">
+		<div>
+			<!-- Pagination will be dynamically generated -->
+		</div>
+	</div>
 </div>
-<script src="list.js" type="text/javascript" charset="utf-8"></script>
-</body>
 
+<!-- 引入必要的JS文件 -->
+<script src="../../lib/layui/layui.js" charset="utf-8"></script>
+<script src="../../static/js/axios.min.js"></script>
+<script>
+	// 修改 admin 模块的路径配置
+	layui.config({
+		base: '../../static/js/' // 设置模块基础路径
+	}).extend({
+		admin: 'admin' // 现在路径为 ../../static/js/admin.js
+	});
+
+	let table; // 在全局范围内定义 table 变量
+
+	layui.use(['table', 'jquery', 'admin', 'form', 'laydate'], function () {
+		table = layui.table; // 初始化 table 变量
+		const $ = layui.jquery,
+				admin = layui.admin,
+				form = layui.form,
+				laydate = layui.laydate;
+
+		// 表格初始化
+		var tableIns = table.render({
+			elem: '#articleList',
+			cellMinWidth: 80,
+			toolbar: true,  // 开启工具栏
+			defaultToolbar: ['filter', 'exports', 'print'], // 默认工具栏
+			data: [],
+			page: true,
+			limits: [5, 10, 20, 40, 50],
+			limit: 5,
+			cols: [[
+				{type: 'checkbox'},
+				{field: 'id', title: 'ID', sort: true},
+				{field: 'title', title: '标题'},
+				{field: 'author', title: '作者'},
+				{field: 'publisher', title: '出版社'},
+				{field: 'publishDate', title: '发布时间', sort: true},
+				{field: 'kind', title: '文章种类', sort: true},
+				{field: 'operate', title: '操作', toolbar: '#operateTpl', unresize: true}
+			]]
+		});
+		window.member_del = function (obj, id) {
+			layer.confirm('确认要删除这篇文章吗？', function (index) {
+				axios.post('/article/delete', { id: id }) // 使用 POST 方法发送 JSON 数据
+						.then(response => {
+							if (response.data.code === 200) {
+								layer.msg('删除成功', { icon: 1, time: 1000 });
+								$(obj).parents("tr").remove(); // 移除对应的表格行
+								loadAllData(); // 删除成功后重新加载数据
+							} else {
+								layer.msg('删除失败：' + response.data.message);
+							}
+						})
+						.catch(error => {
+							if (error.response) {
+								layer.msg('删除失败：' + error.response.statusText);
+							} else if (error.request) {
+								layer.msg('删除失败：网络请求未完成');
+							} else {
+								layer.msg('删除失败：' + error.message);
+							}
+						});
+				layer.close(index);
+			});
+		};
+		// 加载所有数据
+		function loadAllData() {
+			axios.get('http://localhost:8080/article/select')
+					.then(response => {
+						if (response.data.code === 200) {
+							table.reload('articleList', {
+								data: response.data.data
+							});
+						}
+					});
+		}
+
+		loadAllData();
+
+		// 批量删除功能
+		window.delAll = function () {
+			var checkStatus = table.checkStatus('articleList');
+			var data = checkStatus.data;
+			if (data.length === 0) {
+				layer.msg('请选择要删除的数据');
+				return;
+			}
+			layer.confirm('确认要删除这些数据吗？', function (index) {
+				var ids = data.map(item => item.id);
+				axios.post('http://localhost:8080/article/batchDelete', { ids: ids })
+						.then(response => {
+							if (response.data.code === 200) {
+								layer.msg('删除成功');
+								loadAllData(); // 重新加载当前页数据
+							} else {
+								layer.msg('删除失败：' + response.data.msg);
+							}
+						})
+						.catch(error => {
+							layer.msg('删除失败：' + error.message);
+						});
+				layer.close(index);
+			});
+		};
+
+		$('#searchSubmit').on('click', function(e) {
+			e.preventDefault(); // 阻止默认表单提交行为
+
+			const keyword = $('#searchKeyword').val().trim();
+
+			if (!keyword) {
+				layer.msg('请输入搜索关键字');
+				return;
+			}
+
+			axios.get('/article/likeSelect', { // 确认这是正确的API路径
+				params: {
+					keyword: keyword // 作为查询参数传递
+				}
+			})
+					.then(response => {
+						if (response.data.code === 200) {
+							table.reload('articleList', {
+								data: response.data.data
+							});
+						} else {
+							layer.msg('查询失败：' + response.data.message); // 使用 message 属性显示错误信息
+						}
+					})
+					.catch(error => {
+						if (error.response) {
+							// 请求已发出，但服务器响应状态码不在2xx范围内
+							layer.msg('查询失败：' + error.response.statusText);
+						} else if (error.request) {
+							// 请求已经创建，但没有收到响应
+							layer.msg('查询失败：网络请求未完成');
+						} else {
+							// 发起请求时出现了一些其他错误
+							layer.msg('查询失败：' + error.message);
+						}
+					});
+		});
+		//删除
+		// function member_del(obj, id) {
+		// 	layer.confirm('确认要删除这篇文章吗？', function (index) {
+		// 		axios.delete(`/article/delete/${id}`) // 使用 DELETE 方法和动态路径参数
+		// 				.then(response => {
+		// 					if (response.data.code === 200) {
+		// 						layer.msg('删除成功', { icon: 1, time: 1000 });
+		// 						$(obj).parents("tr").remove(); // 移除对应的表格行
+		// 						tableIns.reload(); // 重新加载表格数据以保持一致性
+		// 					} else {
+		// 						layer.msg('删除失败：' + response.data.message);
+		// 					}
+		// 				})
+		// 				.catch(error => {
+		// 					if (error.response) {
+		// 						layer.msg('删除失败：' + error.response.statusText);
+		// 					} else if (error.request) {
+		// 						layer.msg('删除失败：网络请求未完成');
+		// 					} else {
+		// 						layer.msg('删除失败：' + error.message);
+		// 					}
+		// 				});
+		// 		layer.close(index);
+		// 	});
+		// }
+		// 其他功能代码...
+	});
+</script>
+</body>
 </html>

@@ -41,7 +41,7 @@
             <i class="layui-icon">&#xe654;</i>新增</button>
         <span class="fr" style="line-height:40px">共有数据：<span id="totalCount">0</span> 条</span>
     </div>
-    
+
     <!-- 数据表格 -->
     <table class="layui-table" id="orderTable">
         <thead>
@@ -93,10 +93,10 @@
             totalPages = Math.ceil(total / pageSize);
             const pageNumbers = document.querySelector('.page-numbers');
             pageNumbers.innerHTML = '';
-            
+
             // 更新总数显示
             document.getElementById('totalCount').textContent = total;
-            
+
             // 生成页码
             for (let i = 1; i <= totalPages; i++) {
                 const pageLink = document.createElement('a');
@@ -118,7 +118,7 @@
             // 更新上一页/下一页按钮状态
             const prevBtn = document.getElementById('prevPage');
             const nextBtn = document.getElementById('nextPage');
-            
+
             prevBtn.style.opacity = currentPage === 1 ? '0.5' : '1';
             nextBtn.style.opacity = currentPage === totalPages ? '0.5' : '1';
 
@@ -262,7 +262,7 @@
                     console.error('删除订单失败:', error);
                     layer.msg('删除失败，请稍后重试', {icon: 2});
                 });
-                
+
                 layer.close(index);
             });
         }
@@ -300,7 +300,7 @@
                     console.error('批量删除请求失败:', error);
                     layer.msg('删除失败，请稍后重试', {icon: 2});
                 });
-                
+
                 layer.close(index);
             });
         }
@@ -311,7 +311,7 @@
             document.querySelector('.header.layui-form-checkbox').addEventListener('click', function() {
                 const isChecked = this.classList.contains('layui-form-checked');
                 const checkboxes = document.querySelectorAll('.layui-form-checkbox');
-                
+
                 checkboxes.forEach(checkbox => {
                     if (isChecked) {
                         checkbox.classList.remove('layui-form-checked');
@@ -326,11 +326,11 @@
                 checkbox.addEventListener('click', function(e) {
                     e.stopPropagation();
                     this.classList.toggle('layui-form-checked');
-                    
+
                     // 检查是否所有行都被选中
                     const totalRows = document.querySelectorAll('.layui-form-checkbox:not(.header)').length;
                     const checkedRows = document.querySelectorAll('.layui-form-checkbox.layui-form-checked:not(.header)').length;
-                    
+
                     const headerCheckbox = document.querySelector('.header.layui-form-checkbox');
                     if (totalRows === checkedRows) {
                         headerCheckbox.classList.add('layui-form-checked');
@@ -345,13 +345,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             layui.use(['layer'], function(){
                 window.layer = layui.layer;
-                
+
                 // 绑定批量删除按钮事件
                 document.getElementById('batchDeleteBtn').addEventListener('click', delAll);
-                
+
                 // 初始化复选框事件
                 bindCheckboxEvents();
-                
+
                 // 加载订单数据
                 getOrders();
             });
@@ -364,12 +364,12 @@
     layui.use(['layer', 'jquery'], function(){
     var layer = layui.layer;
     var $ = layui.jquery;
-    
+
     // 新增按钮事件
     $('#addOrderBtn').on('click', function(){
         // 直接跳转到 addorder.html 页面
         window.location.href = './add.html';
-        
+
         // 或者如果你想在新窗口打开
         // window.open('./addorder.html', '_blank');
     });
