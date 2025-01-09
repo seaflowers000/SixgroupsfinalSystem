@@ -1,6 +1,6 @@
+
 <!DOCTYPE html>
 <html>
-
 <head>
 	<meta charset="UTF-8">
 	<title>文章列表-WeAdmin Frame型后台管理系统-WeAdmin 1.0</title>
@@ -10,15 +10,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
 	<link rel="stylesheet" href="../../static/css/font.css">
 	<link rel="stylesheet" href="../../static/css/weadmin.css">
-	<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
-	<!--[if lt IE 9]>
-	<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
-	<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
-	<![endif]-->
 	<style type="text/css">
 		body{overflow-y: scroll;}
 	</style>
-	<script src="../../lib/layui/layui.js" charset="utf-8"></script>
 </head>
 
 <body>
@@ -39,48 +33,257 @@
 		<form class="layui-form layui-col-md12 we-search">
 			文章搜索：
 			<div class="layui-inline">
-				<input class="layui-input" placeholder="开始日" name="start" id="start">
-			</div>
-			<div class="layui-inline">
-				<input class="layui-input" placeholder="截止日" name="end" id="end">
-			</div>
-			<div class="layui-inline">
 				<input type="text" name="keyword" placeholder="请输入关键字" autocomplete="off" class="layui-input">
 			</div>
-			<button class="layui-btn" lay-submit="" lay-filter="sreach">
+			<button class="layui-btn" lay-submit lay-filter="sreach">
 				<i class="layui-icon">&#xe615;</i>
 			</button>
 		</form>
 	</div>
 
 	<div class="weadmin-block demoTable">
-		<button class="layui-btn layui-btn-danger" data-type="getCheckData">
+		<button class="layui-btn layui-btn-danger"  data-type="getCheckData" onclick="delAll()" >
 			<i class="layui-icon">&#xe640;</i>批量删除
 		</button>
 		<button class="layui-btn" onclick="WeAdminShow('添加文章','./add.html',600,400)">
 			<i class="layui-icon">&#xe61f;</i>添加
 		</button>
-		<span class="fr" style="line-height:40px">共有数据：<span id="dataCount">0</span> 条</span>
 	</div>
 
 	<table class="layui-hide" id="articleList"></table>
 
 	<script type="text/html" id="operateTpl">
-		<a title="编辑" onclick="WeAdminEdit('编辑','./edit.html', {{d.id}}, 600, 400)" href="javascript:;">
+		<a onclick="WeAdminEdit('编辑','./edit.html?id={{d.id}}', {{d.id}}, 600, 400)">
 			<i class="layui-icon">&#xe642;</i>
 		</a>
 		<a title="查看" onclick="WeAdminShow('查看文章','./show.html?id={{d.id}}',600,400)" href="javascript:;">
-			<i class="layui-icon">&#xe63c;</i>
+			<i class="layui-icon" class="delete">&#xe63c;</i>
 		</a>
 		<a title="删除" onclick="member_del(this,'{{d.id}}')" href="javascript:;">
 			<i class="layui-icon">&#xe640;</i>
 		</a>
 	</script>
-
-	<script src="../../lib/layui/layui.js" charset="utf-8"></script>
-	<script src="list.js" type="text/javascript" charset="utf-8"></script>
+	<div class="page">
+		<div>
+			<!--			<a class="prev" href="">&lt;&lt;</a>-->
+			<!--			<a class="num" href="">1</a>-->
+			<!--			<span class="current">2</span>-->
+			<!--			<a class="num" href="">3</a>-->
+			<!--			<a class="num" href="">489</a>-->
+			<!--			<a class="next" href="">&gt;&gt;</a>-->
+		</div>
+	</div>
 </div>
-<script src="list.js" type="text/javascript" charset="utf-8"></script>
-</body>
 
+<!-- 引入必要的JS文件 -->
+<script src="../../lib/layui/layui.js" charset="utf-8"></script>
+<script src="../../static/js/axios.min.js"></script>
+<script>
+	// 修改 admin 模块的路径配置
+	layui.config({
+		base: '../../static/js/' // 设置模块基础路径
+	}).extend({
+		admin: 'admin' // 现在路径为 ../../static/js/admin.js
+	});
+
+	layui.use(['table', 'jquery','admin', 'form', 'laydate'], function () {
+		var table = layui.table,
+				$ = layui.jquery,
+				admin = layui.admin,
+				form = layui.form,
+				laydate = layui.laydate;
+		var currentPage = 1;  // 添加当前页变量
+		var pageSize = 5;    // 添加每页显示数量变量
+
+		// 表格初始化
+		var tableIns = table.render({
+			elem: '#articleList',
+			cellMinWidth: 80,
+			toolbar: true,  // 添加这行，开启工具栏
+			defaultToolbar: ['filter', 'exports', 'print'], // 默认工具栏
+			data: [],
+			page: true,
+			limits: [5, 10, 20, 40, 50],
+			limit: 5,
+			cols: [[
+				{type: 'checkbox'},
+				{field: 'id', title: 'ID', sort: true},
+				{field: 'title', title: '标题'},
+				{field: 'author', title: '作者'},
+				{field: 'publisher', title: '出版社'},
+				{field: 'publishDate', title: '发布时间', sort: true},
+				{field: 'kind', title: '文章种类', sort: true},
+				{field: 'operate', title: '操作', toolbar: '#operateTpl', unresize: true}
+			]],
+			data:[]
+		});
+		/**查询*/
+		function loadAllData() {
+			axios({
+				method: 'get',
+				url: 'http://localhost:8080/article/select',
+			}).then(response => {
+				console.log('获取到的数据：', response.data);
+				if (response.data.code === 200) {
+					// 处理日期格式
+					const formattedData = response.data.data.map(item => ({
+						...item,
+						joinTime: item.joinTime ? new Date(item.joinTime).toLocaleString() : ''
+					}));
+					tableIns.reload({
+						data: formattedData,
+						page: {
+							count: formattedData.length
+						}
+					});
+					layer.msg('数据加载成功');
+				}
+			})
+		}
+
+		loadAllData();
+
+		// 搜索功能
+		form.on('submit(sreach)', function (data) {
+			currentPage = 1;
+			axios({
+				url: "http://localhost:8080/article/likeSelect",
+				method: "post",
+				data: {
+					...data.field,
+					page: currentPage,
+					limit: pageSize
+				}
+			}).then((response) => {
+				console.log('搜索返回数据:', response.data);
+				if (response.data.code === 200) {
+					table.reload('articleList', {
+						data: response.data.data,
+						page: {
+							curr: 1
+						}
+					});
+				}
+			})
+			return false; // 阻止表单默认提交
+		});
+		/**查询/
+
+		 /***删除*/
+		// 监听工具条
+		table.on('tool(articleList)', function(obj){
+			var checkStatus = table.checkStatus('articleList');
+			var data = obj.data;
+			if(obj.event === 'del'){
+				layer.confirm('确认要删除吗？', function(index){
+					axios({
+						method: 'post',
+						url: 'http://localhost:8080/article/delete',
+						data: {
+							id: data.id
+						}
+					}).then(response => {
+						if(response.data.code === 200){
+							obj.del();
+							layer.msg('删除成功');
+							// 重新加载当前页数据
+							loadAllData();
+						} else {
+							layer.msg('删除失败：' + response.data.msg);
+						}
+					}).catch(error => {
+						layer.msg('删除失败：' + error.message);
+					});
+					layer.close(index);
+				});
+			} else if(obj.event === 'edit'){
+				layer.open({
+					type: 2,
+					title: '编辑会员信息',
+					content: './edit.html?id=' + data.id,
+					area: ['600px', '400px']
+				});
+			}
+		});
+
+	});
+	//
+	// 修改删除文章的函数
+	const deleteArticle = async (id) => {
+		try {
+			const response = await axios({
+				method: 'post',
+				url: 'http://localhost:8080/article/delete',
+				data: { id: id }
+			});
+			if (response.data.code === 200) {
+				return { success: true, message: '删除成功' };
+			} else {
+				return { success: false, message: response.data.message || '删除失败' };
+			}
+		} catch (error) {
+			console.error('删除请求错误:', error);
+			return { success: false, message: '删除失败，请稍后再试' };
+		}
+	};
+
+	// 修改删除处理函数
+	function member_del(obj, id) {
+		layer.confirm('确定要删除吗？', {
+			btn: ['确定', '取消']
+		}, async () => {
+			const result = await deleteArticle(id);
+			if (result.success) {
+				layer.msg(result.message, { icon: 1 });
+				// 删除成功后重新加载表格数据
+				table.reload('articleList', {
+					url: 'http://localhost:8080/article/select'
+				});q
+				// 或者使用之前定义的loadAllData函数
+				loadAllData();
+			} else {
+				layer.msg(result.message, { icon: 2 });
+			}
+		});
+	}
+	/***删除*/
+
+	/**批量删除*/
+
+	window.delAll = function(){
+		var checkStatus = table.checkStatus('articleList');
+		var data = checkStatus.data;
+		if(data.length === 0){
+			layer.msg('请选择要删除的数据');
+			return;
+		}
+		layer.confirm('确认要删除这些数据吗？', function(index){
+			var ids = data.map(item => item.id);
+			axios({
+				method: 'post',
+				url: 'http://localhost:8080/article/batchDelete',
+				data: {
+					ids: ids
+				}
+			}).then(response => {
+				if(response.data.code === 200){
+					layer.msg('删除成功');
+					loadAllData(); // 重新加载当前页数据
+				} else {
+					layer.msg('删除失败：' + response.data.msg);
+				}
+			}).catch(error => {
+				layer.msg('删除失败：' + error.message);
+			});
+			layer.close(index);
+		});
+	}
+
+	// 监听分页事件
+	table.on('page(articleList)', function(obj){
+		loadAllData(obj.curr, obj.limit);
+	})
+	/**批量删除*/
+</script>
+</body>
 </html>

@@ -191,7 +191,12 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+            <optional>true</optional>
+        </dependency>
         <!--MP代码生成器依赖-->
         <dependency>
             <groupId>com.baomidou</groupId>

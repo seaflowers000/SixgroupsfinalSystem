@@ -50,5 +50,56 @@ public class ArticleListServiceImpl implements ArticleListService {
         }
     }
 
+    /**
+     * 删除
+     * @param id
+     * @return
+     */
+    @Override
+    public int delete(long id) {
+        try {
+            int result = articleListMapper.delete(id);
+            if (result > 0){
+                //添加成功
+                return 1;
+            }else {
+                return 0;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<ArticleList> selectByLike(String title) {
+        try {
+            List<ArticleList> articleLists = articleListMapper.selectByLike(title);
+            if (articleLists != null){
+                //查询到数据，返回
+                return articleLists;
+            }else {
+                return null;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 批量删除
+     * @param ids
+     * @return
+     */
+    @Override
+    public int batchDelete(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return 1;
+        }
+        for (Long id : ids) {
+            articleListMapper.batchDelete(ids);
+        }
+        return 0;
+    }
+
 
 }
